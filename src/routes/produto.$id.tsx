@@ -48,7 +48,7 @@ export const Route = createFileRoute("/produto/$id")({
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const { product } = Route.useLoaderData() as { product: NonNullable<ReturnType<typeof getProduct>> };
 
   const related = products
     .filter((p) => p.category === product.category && p.id !== product.id)
