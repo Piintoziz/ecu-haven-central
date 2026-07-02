@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/produto/$id")({
   component: ProductPage,
-  loader: ({ params }) => {
+  loader: ({ params }): { product: NonNullable<ReturnType<typeof getProduct>> } => {
     const product = getProduct(params.id);
     if (!product) throw notFound();
     return { product };
