@@ -148,3 +148,38 @@
     linear-gradient(to bottom, oklch(1 0 0 / 3%) 1px, transparent 1px);
   background-size: 48px 48px;
 }
+
+/* Tratamento visual consistente para fotografia (leve dessaturação + tom quente) */
+@utility img-treated {
+  filter: saturate(0.75) contrast(1.05) brightness(0.9);
+}
+
+@utility img-treated-warm {
+  filter: saturate(0.7) contrast(1.08) brightness(0.85) sepia(0.12);
+}
+
+/* Skeleton shimmer */
+@utility skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 0%,
+    var(--color-surface-elevated) 50%,
+    var(--color-surface) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Underline animado */
+@utility nav-underline {
+  position: relative;
+}
+@utility nav-underline-inner {
+  position: relative;
+}
+

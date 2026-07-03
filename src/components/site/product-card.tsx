@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Cpu } from "lucide-react";
 import { availabilityLabels, type Product } from "@/lib/mock-data";
+import { categoryImage } from "@/lib/images";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -15,25 +15,34 @@ export function ProductCard({ product }: Props) {
         ? "bg-warning/15 text-warning"
         : "bg-destructive/15 text-destructive";
 
+  const img = product.image || categoryImage[product.category];
+
   return (
     <Link
       to="/produto/$id"
       params={{ id: product.id }}
-      className="group surface-card hover-lift overflow-hidden flex flex-col hover:border-primary/40"
+      className="group surface-card overflow-hidden flex flex-col hover:border-primary/50 transition-colors"
     >
-      <div className="relative aspect-[4/3] bg-background border-b border-border grid place-items-center overflow-hidden">
-        {/* TODO(backend): substituir por imagem real do produto */}
-        <div className="absolute inset-0 grid-noise opacity-60" />
-        <Cpu className="size-16 text-primary/40 group-hover:text-primary/70 transition-colors relative" />
+      <div className="relative aspect-[4/3] bg-background border-b border-border overflow-hidden">
+        <img
+          src={img}
+          alt={product.title}
+          loading="lazy"
+          className="absolute inset-0 h-full w-full object-cover img-treated transition-transform duration-[600ms] ease-out group-hover:scale-[1.06]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/30 to-transparent" />
         <div className="absolute top-3 right-3">
           <span
             className={cn(
-              "rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+              "rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm",
               badgeClass,
             )}
           >
             {availabilityLabels[product.availability]}
           </span>
+        </div>
+        <div className="absolute bottom-3 left-3 mono-label text-foreground/80">
+          {product.brand}
         </div>
       </div>
 
@@ -62,7 +71,7 @@ export function ProductCard({ product }: Props) {
               €{product.price.toFixed(2)}
             </div>
           </div>
-          <span className="text-xs font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="text-xs font-bold text-primary translate-x-0 group-hover:translate-x-1 transition-transform">
             Ver detalhes →
           </span>
         </div>
