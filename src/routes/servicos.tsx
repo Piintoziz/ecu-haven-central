@@ -36,10 +36,10 @@ const icons = {
 
 function ServicosPage() {
   return (
-    <div className="container-page py-14 md:py-20">
+    <div className="container-page py-12 md:py-16">
       <div className="max-w-2xl mb-16">
         <div className="mono-label text-primary mb-3">Serviços Técnicos</div>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-foreground leading-tight mb-6">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-foreground leading-tight mb-6">
           Laboratório dedicado a eletrónica automóvel.
         </h1>
         <p className="text-lg text-muted-foreground">
@@ -76,20 +76,20 @@ function ServicosPage() {
         })}
       </div>
 
-      <div className="surface-card p-8 md:p-12 text-center relative overflow-hidden">
-        <div className="absolute inset-0 grid-noise opacity-30" />
-        <div className="relative">
-          <div className="mono-label text-primary mb-3">Precisa de algo específico?</div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-foreground mb-4">
-            Fala com um técnico especializado
+      <div className="border-l-2 border-primary bg-surface p-8 md:p-10 grid md:grid-cols-[1fr_auto] gap-6 items-center">
+        <div>
+          <div className="mono-label text-primary mb-2">Orçamento em 2h úteis</div>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-foreground mb-2">
+            Envia a referência e o defeito.
           </h2>
-          <p className="text-muted-foreground max-w-lg mx-auto mb-6">
-            Envie a referência ou descrição do problema. Respondemos em minutos.
+          <p className="text-muted-foreground max-w-lg">
+            Respondemos com preço, prazo e viabilidade de reparação. Sem custo
+            de diagnóstico se não avançares.
           </p>
-          <Link to="/contactos">
-            <Button size="lg">Pedir orçamento personalizado</Button>
-          </Link>
         </div>
+        <Link to="/contactos">
+          <Button size="lg">Pedir orçamento</Button>
+        </Link>
       </div>
     </div>
   );

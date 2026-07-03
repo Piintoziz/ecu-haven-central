@@ -55,30 +55,27 @@ function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden border-b border-border">
-        <div className="absolute inset-0 grid-noise opacity-40" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--color-primary)_0%,_transparent_50%)] opacity-10" />
-        <div className="container-page relative py-20 md:py-28">
+      <section className="relative border-b border-border bg-surface/30">
+        <div className="container-page py-14 md:py-20">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-primary mono-label mb-6">
-              <span className="relative flex size-2">
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-75" />
-                <span className="relative inline-flex size-2 rounded-full bg-primary" />
-              </span>
-              Referência Europeia em ECUs
+            <div className="inline-flex items-center gap-2 border-l-2 border-primary pl-3 py-1 text-primary mono-label mb-6">
+              <span className="size-1.5 rounded-full bg-primary" />
+              250.000+ referências em stock · Envio 24h
             </div>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-[1.05] mb-6">
-              O maior stock de{" "}
-              <span className="text-primary">centralinas</span> da Europa.
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.05] mb-5">
+              Centralinas automóveis.{" "}
+              <span className="text-primary">Referência OEM,</span> pronta a
+              enviar.
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mb-10">
-              Venda, reparação e reprogramação de alta precisão. Centralinas
-              testadas com garantia total para oficinas e profissionais.
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mb-8">
+              Venda, reparação e reprogramação de ECUs, ABS, airbag, TCU e BCM
+              para 60+ marcas. Testadas em bancada, garantia 12 meses.
             </p>
             <SearchBar />
           </div>
         </div>
       </section>
+
 
       {/* TRUST */}
       <section className="border-b border-border bg-surface/40">
@@ -100,9 +97,9 @@ function HomePage() {
       </section>
 
       {/* CATEGORIES */}
-      <section className="py-20 md:py-24">
+      <section className="py-14 md:py-16">
         <div className="container-page">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
             <div>
               <div className="mono-label text-primary mb-2">01 · Catálogo</div>
               <h2 className="text-3xl md:text-4xl font-extrabold text-foreground">
@@ -151,9 +148,9 @@ function HomePage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-20 md:py-24 bg-surface/40 border-y border-border">
+      <section className="py-14 md:py-16 bg-surface/40 border-y border-border">
         <div className="container-page">
-          <div className="text-center max-w-2xl mx-auto mb-16">
+          <div className="text-center max-w-2xl mx-auto mb-12">
             <div className="mono-label text-primary mb-2">02 · Processo</div>
             <h2 className="text-3xl md:text-4xl font-extrabold text-foreground">
               Do diagnóstico à entrega
@@ -202,9 +199,9 @@ function HomePage() {
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section className="py-20 md:py-24">
+      <section className="py-14 md:py-16">
         <div className="container-page">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
             <div>
               <div className="mono-label text-primary mb-2">03 · Stock</div>
               <h2 className="text-3xl md:text-4xl font-extrabold text-foreground">
@@ -228,17 +225,17 @@ function HomePage() {
       </section>
 
       {/* SERVICES */}
-      <section className="py-20 md:py-24 bg-surface/40 border-y border-border">
+      <section className="py-14 md:py-16 bg-surface/40 border-y border-border">
         <div className="container-page">
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <div>
               <div className="mono-label text-primary mb-2">04 · Serviços</div>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-foreground leading-tight mb-6">
-                Engenharia eletrónica automóvel de elite.
+              <h2 className="text-3xl md:text-4xl font-extrabold text-foreground leading-tight mb-4">
+                Não temos a peça? Reparamos a tua.
               </h2>
-              <p className="text-muted-foreground mb-8 max-w-md">
-                Reparação, reprogramação, clonagem e diagnóstico avançado feitos
-                em laboratório próprio.
+              <p className="text-muted-foreground mb-6 max-w-md">
+                Laboratório próprio para reparação, reprogramação, clonagem e
+                virginização. Recebemos, testamos e devolvemos em 3–5 dias úteis.
               </p>
               <Link to="/servicos">
                 <Button size="lg" className="gap-2">
@@ -268,10 +265,10 @@ function HomePage() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="py-20 md:py-24">
+      <section className="py-14 md:py-16">
         <div className="container-page">
           <div className="mono-label text-primary mb-2">05 · Clientes</div>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-12">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-10">
             Quem trabalha connosco.
           </h2>
           <div className="grid md:grid-cols-3 gap-6">

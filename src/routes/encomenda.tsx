@@ -36,11 +36,11 @@ function EncomendaPage() {
   const currentStep = 3;
 
   return (
-    <div className="container-page py-14 md:py-20">
+    <div className="container-page py-12 md:py-16">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
           <div className="mono-label text-primary mb-3">Tracking</div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-foreground mb-4">
             Acompanhar encomenda
           </h1>
           <p className="text-muted-foreground">
