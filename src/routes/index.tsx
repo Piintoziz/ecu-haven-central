@@ -230,12 +230,12 @@ function HomePage() {
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <div>
               <div className="mono-label text-primary mb-2">04 · Serviços</div>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-foreground leading-tight mb-6">
-                Engenharia eletrónica automóvel de elite.
+              <h2 className="text-3xl md:text-4xl font-extrabold text-foreground leading-tight mb-4">
+                Não temos a peça? Reparamos a tua.
               </h2>
-              <p className="text-muted-foreground mb-8 max-w-md">
-                Reparação, reprogramação, clonagem e diagnóstico avançado feitos
-                em laboratório próprio.
+              <p className="text-muted-foreground mb-6 max-w-md">
+                Laboratório próprio para reparação, reprogramação, clonagem e
+                virginização. Recebemos, testamos e devolvemos em 3–5 dias úteis.
               </p>
               <Link to="/servicos">
                 <Button size="lg" className="gap-2">
