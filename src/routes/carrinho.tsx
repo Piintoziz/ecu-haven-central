@@ -25,7 +25,7 @@ function CarrinhoPage() {
   const total = subtotal + shipping;
 
   return (
-    <div className="container-page py-14 md:py-20">
+    <div className="container-page py-12 md:py-16">
       <div className="mono-label text-primary mb-3">Carrinho</div>
       <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-10">
         A sua encomenda

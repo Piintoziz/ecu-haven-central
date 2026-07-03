@@ -25,7 +25,7 @@ function CheckoutPage() {
   const [step, setStep] = useState(0);
 
   return (
-    <div className="container-page py-14 md:py-20">
+    <div className="container-page py-12 md:py-16">
       <div className="max-w-4xl mx-auto">
         <div className="mono-label text-primary mb-3">Checkout</div>
         <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-10">

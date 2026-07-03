@@ -36,7 +36,7 @@ function EncomendaPage() {
   const currentStep = 3;
 
   return (
-    <div className="container-page py-14 md:py-20">
+    <div className="container-page py-12 md:py-16">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
           <div className="mono-label text-primary mb-3">Tracking</div>

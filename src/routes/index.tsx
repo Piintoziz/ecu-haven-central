@@ -97,7 +97,7 @@ function HomePage() {
       </section>
 
       {/* CATEGORIES */}
-      <section className="py-14 md:py-18">
+      <section className="py-14 md:py-16">
         <div className="container-page">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
             <div>
@@ -148,7 +148,7 @@ function HomePage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-14 md:py-18 bg-surface/40 border-y border-border">
+      <section className="py-14 md:py-16 bg-surface/40 border-y border-border">
         <div className="container-page">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <div className="mono-label text-primary mb-2">02 · Processo</div>
@@ -199,7 +199,7 @@ function HomePage() {
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section className="py-14 md:py-18">
+      <section className="py-14 md:py-16">
         <div className="container-page">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
             <div>
@@ -225,7 +225,7 @@ function HomePage() {
       </section>
 
       {/* SERVICES */}
-      <section className="py-14 md:py-18 bg-surface/40 border-y border-border">
+      <section className="py-14 md:py-16 bg-surface/40 border-y border-border">
         <div className="container-page">
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <div>
@@ -265,7 +265,7 @@ function HomePage() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="py-14 md:py-18">
+      <section className="py-14 md:py-16">
         <div className="container-page">
           <div className="mono-label text-primary mb-2">05 · Clientes</div>
           <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-10">
