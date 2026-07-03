@@ -28,7 +28,7 @@ function CheckoutPage() {
     <div className="container-page py-12 md:py-16">
       <div className="max-w-4xl mx-auto">
         <div className="mono-label text-primary mb-3">Checkout</div>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-10">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-foreground mb-10">
           Finalizar encomenda
         </h1>
 
