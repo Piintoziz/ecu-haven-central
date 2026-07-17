@@ -81,14 +81,37 @@ function HomePage() {
       >
         <motion.div
           style={{ y: heroY, scale: heroScale }}
-          className="absolute inset-0 -z-10"
+          className="absolute inset-0 -z-10 bg-background"
         >
+          {/* Fallback poster while video loads */}
           <img
             src={images.heroEngine}
             alt=""
-            className="h-full w-full object-cover img-treated-warm"
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover img-treated-warm"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/40" />
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            poster={images.heroEngine}
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover img-treated-warm"
+          >
+            <source
+              src="https://cdn.pixabay.com/video/2022/10/12/134876-759790785_large.mp4"
+              type="video/mp4"
+            />
+            <source
+              src="https://cdn.pixabay.com/video/2020/04/12/35443-410630903_large.mp4"
+              type="video/mp4"
+            />
+          </video>
+          {/* Dark overlay for text contrast */}
+          <div className="absolute inset-0 bg-black/55" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background/30" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
         </motion.div>
 
