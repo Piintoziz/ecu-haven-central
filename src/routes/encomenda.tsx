@@ -1,167 +1,112 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Check, Package, PackageCheck, Truck, Warehouse } from "lucide-react";
-import { useState } from "react";
+import { Loader2, Search } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { z } from "zod";
+import { OrderView } from "@/components/site/order-view";
 import { Button } from "@/components/ui/button";
-import { trackingSteps, type TrackingStepId } from "@/lib/mock-data";
-import { cn } from "@/lib/utils";
+import { trackOrder } from "@/lib/orders.functions";
+import { ORDER_CODE_RE } from "@/lib/schemas";
+import { headI18n, useT } from "@/lib/i18n";
+import { pageHead } from "@/lib/seo";
+import type { TrackedOrder } from "@/lib/types";
 
 export const Route = createFileRoute("/encomenda")({
+  validateSearch: (s: Record<string, unknown>) =>
+    z.object({ codigo: z.string().max(20).optional().catch(undefined) }).parse(s),
+  head: ({ match }) => {
+    const { locale, t } = headI18n(match);
+    return pageHead({ title: t.orders.trackTitle, description: t.orders.trackMetaDescription, path: "/encomenda", noindex: true, locale });
+  },
   component: EncomendaPage,
-  head: () => ({
-    meta: [
-      { title: "Acompanhar Encomenda — Centralinas" },
-      {
-        name: "description",
-        content:
-          "Acompanhe o estado da sua encomenda em tempo real, desde a preparação até à entrega.",
-      },
-    ],
-  }),
 });
 
-const stepIcons: Record<TrackingStepId, typeof Check> = {
-  confirmed: Check,
-  preparing: Package,
-  shipped: Warehouse,
-  "in-transit": Truck,
-  delivered: PackageCheck,
-};
+/** Aceita "ct uagkl 2an9r", "CTUAGKL2AN9R", etc. e devolve "CT-UAGKL-2AN9R". */
+function formatCode(raw: string): string {
+  let c = raw.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (c.length === 12 && c.startsWith("CT")) c = c.slice(2);
+  if (c.length !== 10) return raw.toUpperCase().trim();
+  return `CT-${c.slice(0, 5)}-${c.slice(5)}`;
+}
 
 function EncomendaPage() {
-  const [orderNumber, setOrderNumber] = useState("");
-  const [carrier, setCarrier] = useState("CTT Expresso");
-  const [submitted, setSubmitted] = useState(false);
+  const { codigo } = Route.useSearch();
+  const [code, setCode] = useState(codigo ? formatCode(codigo) : "");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [order, setOrder] = useState<TrackedOrder | null>(null);
+  const autoRan = useRef(false);
+  const t = useT();
+  const o = t.orders;
 
-  // Mock: assume encomenda está em trânsito (índice 3)
-  const currentStep = 3;
+  async function lookup(value: string) {
+    setError(null);
+    if (!ORDER_CODE_RE.test(value)) {
+      setError(o.codeFormat);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await trackOrder({ data: { code: value } });
+      if (res.ok) setOrder(res.order);
+      else {
+        setOrder(null);
+        setError(res.error);
+      }
+    } catch {
+      setError(o.unavailable);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (codigo && !autoRan.current) {
+      autoRan.current = true;
+      void lookup(formatCode(codigo));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [codigo]);
 
   return (
     <div className="container-page py-12 md:py-16">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-12">
-          <div className="mono-label text-primary mb-3">Tracking</div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-foreground mb-4">
-            Acompanhar encomenda
-          </h1>
-          <p className="text-muted-foreground">
-            Introduza o número da encomenda para ver o estado em tempo real.
-          </p>
-        </div>
+      <div className="mx-auto max-w-3xl">
+        <h1 className="text-3xl font-extrabold md:text-4xl">{o.trackTitle}</h1>
+        <p className="mt-2 text-muted-foreground">
+          {o.trackIntro}
+        </p>
 
-        {/* TODO(backend): integrar com API real de transportadora (CTT, DHL, etc.) */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            setSubmitted(true);
+            const formatted = formatCode(code);
+            setCode(formatted);
+            void lookup(formatted);
           }}
-          className="surface-card p-6 mb-12 grid gap-4 sm:grid-cols-[1fr_auto_auto]"
+          className="mt-8 flex flex-col gap-3 sm:flex-row"
         >
-          <div>
-            <label className="mono-label mb-2 block">Nº da encomenda</label>
-            <input
-              value={orderNumber}
-              onChange={(e) => setOrderNumber(e.target.value)}
-              placeholder="Ex: CTL-2026-01234"
-              className="w-full rounded-md border border-border bg-background px-3 py-2 font-mono text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/60"
-              required
-            />
-          </div>
-          <div>
-            <label className="mono-label mb-2 block">Transportadora</label>
-            <select
-              value={carrier}
-              onChange={(e) => setCarrier(e.target.value)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary/60"
-            >
-              <option>CTT Expresso</option>
-              <option>DHL</option>
-              <option>DPD</option>
-              <option>Nacex</option>
-            </select>
-          </div>
-          <div className="flex items-end">
-            <Button type="submit" className="w-full">
-              Acompanhar
-            </Button>
-          </div>
+          <label htmlFor="codigo" className="sr-only">{o.codeLabel}</label>
+          <input
+            id="codigo"
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase().slice(0, 20))}
+            maxLength={20}
+            placeholder="CT-XXXXX-XXXXX"
+            autoComplete="off"
+            spellCheck={false}
+            className="h-12 flex-1 rounded-md border border-input bg-background px-4 font-mono text-lg tracking-wider placeholder:text-muted-foreground/50 focus:border-primary/70 focus:outline-none focus:ring-2 focus:ring-primary/20"
+          />
+          <Button type="submit" size="lg" className="h-12 font-bold" disabled={loading}>
+            {loading ? <Loader2 className="animate-spin" /> : <Search />}
+            {o.lookup}
+          </Button>
         </form>
-
-        {submitted && (
-          <div className="surface-card p-8">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 pb-6 border-b border-border">
-              <div>
-                <div className="mono-label mb-1">Encomenda</div>
-                <div className="font-mono text-lg font-bold text-foreground">
-                  {orderNumber}
-                </div>
-              </div>
-              <div className="text-sm">
-                <span className="mono-label">Transportadora: </span>
-                <span className="font-bold text-foreground">{carrier}</span>
-              </div>
-              <div className="rounded-md bg-warning/15 text-warning px-3 py-1 text-xs font-bold uppercase tracking-wider">
-                Em trânsito
-              </div>
-            </div>
-
-            {/* Stepper */}
-            <div className="relative">
-              <div className="hidden sm:block absolute left-0 right-0 top-6 h-0.5 bg-border">
-                <div
-                  className="h-full bg-primary transition-all"
-                  style={{
-                    width: `${(currentStep / (trackingSteps.length - 1)) * 100}%`,
-                  }}
-                />
-              </div>
-
-              <ol className="grid sm:grid-cols-5 gap-6 sm:gap-2 relative">
-                {trackingSteps.map((step, i) => {
-                  const done = i <= currentStep;
-                  const active = i === currentStep;
-                  const Icon = stepIcons[step.id];
-                  return (
-                    <li
-                      key={step.id}
-                      className="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-4"
-                    >
-                      <div
-                        className={cn(
-                          "grid size-12 place-items-center rounded-full border-2 shrink-0 relative bg-background transition-colors",
-                          done
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border text-muted-foreground",
-                          active && "ring-4 ring-primary/20",
-                        )}
-                      >
-                        <Icon className="size-5" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="mono-label mb-1">Passo {i + 1}</div>
-                        <div
-                          className={cn(
-                            "text-sm font-bold",
-                            done ? "text-foreground" : "text-muted-foreground",
-                          )}
-                        >
-                          {step.label}
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
-            </div>
-
-            <div className="mt-10 pt-6 border-t border-border">
-              <div className="mono-label mb-3">Última atualização</div>
-              <p className="text-sm text-foreground">
-                A sua encomenda saiu do centro de distribuição de Lisboa e está a
-                caminho do destino.
-              </p>
-            </div>
-          </div>
+        {error && (
+          <p role="alert" className="mt-3 text-sm text-destructive">
+            {t.common.msg(error)}
+          </p>
         )}
+
+        {order && <OrderView order={order} />}
       </div>
     </div>
   );

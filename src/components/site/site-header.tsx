@@ -1,94 +1,134 @@
-import { Link } from "@tanstack/react-router";
-import { Menu, ShoppingCart, User } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "framer-motion";
+import { Menu, Phone, ShoppingCart, UserRound, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth";
+import { COMPANY } from "@/lib/content";
+import { useCart } from "@/lib/cart";
+import { useT } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
+import { LanguageSwitcher } from "./language-switcher";
+import { LogoFull } from "./logo";
 import { SearchBar } from "./search-bar";
 
 const NAV = [
-  { to: "/catalogo", label: "Catálogo" },
-  { to: "/servicos", label: "Serviços" },
-  { to: "/encomenda", label: "Acompanhar Encomenda" },
-  { to: "/sobre", label: "Sobre" },
-  { to: "/contactos", label: "Contactos" },
+  { to: "/catalogo", key: "catalog" },
+  { to: "/servicos", key: "services" },
+  { to: "/encomenda", key: "track" },
+  { to: "/sobre", key: "about" },
+  { to: "/contactos", key: "contact" },
 ] as const;
 
 export function SiteHeader() {
+  const t = useT();
+  const l = t.layout;
   const [open, setOpen] = useState(false);
+  const { count, ready } = useCart();
+  const auth = useAuth();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => setOpen(false), [pathname]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="container-page grid grid-cols-[auto_1fr_auto] items-center gap-6 h-16 md:h-20">
-        <Link to="/" className="flex items-center gap-2 shrink-0">
-          <div className="grid size-9 place-items-center rounded-md bg-primary">
-            <span className="font-display font-extrabold text-primary-foreground">C</span>
-          </div>
-          <div className="hidden sm:flex flex-col leading-none">
-            <span className="font-display font-extrabold tracking-tight text-foreground">
-              CENTRALINAS
-            </span>
-            <span className="mono-label mt-1">Euro-Stock Leader</span>
-          </div>
+    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md">
+      <div className="hidden md:block border-b border-border/60 bg-surface/50">
+        <div className="container-page flex h-8 items-center justify-between text-[11px] text-muted-foreground">
+          <p>{l.topbar}</p>
+          <a href={COMPANY.phoneHref} className="inline-flex items-center gap-1.5 hover:text-foreground">
+            <Phone className="size-3" aria-hidden /> {l.support} {COMPANY.phone}
+          </a>
+        </div>
+      </div>
+
+      <div className="container-page flex h-16 items-center gap-3 md:gap-6">
+        <Link to="/" className="flex shrink-0 items-center" aria-label={l.homeAria}>
+          <LogoFull priority className="h-10 sm:h-12" />
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-8 justify-center text-sm font-semibold text-muted-foreground">
+        <nav aria-label={t.layout.nav.aria} className="hidden xl:flex items-center gap-5 whitespace-nowrap text-sm font-semibold">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className="hover:text-primary transition-colors"
-              activeProps={{ className: "text-foreground" }}
+              className="text-muted-foreground transition-colors hover:text-foreground"
+              activeProps={{ className: "!text-foreground" }}
             >
-              {item.label}
+              {l.nav[item.key]}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-2 justify-end">
-          {/* TODO(backend): trocar por estado real de auth */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="hidden md:inline-flex text-muted-foreground hover:text-foreground"
+        <div className="ml-auto hidden md:block w-full min-w-0 max-w-sm xl:max-w-xs 2xl:max-w-sm">
+          {pathname !== "/" && <SearchBar />}
+        </div>
+
+        <div className="ml-auto md:ml-0 flex shrink-0 items-center gap-1.5">
+          <LanguageSwitcher className="hidden sm:inline-flex" />
+          <Link
+            to={auth.user ? "/conta" : "/entrar"}
+            className="inline-flex h-9 items-center gap-2 rounded-md px-2.5 text-sm font-semibold text-muted-foreground hover:bg-accent hover:text-foreground"
+            aria-label={auth.user ? l.myAccount : l.signIn}
           >
-            <User className="size-4" />
-            <span className="hidden xl:inline">Conta</span>
-          </Button>
-          <Link to="/carrinho">
-            <Button variant="outline" size="sm" className="gap-2">
-              <ShoppingCart className="size-4" />
-              <span className="hidden sm:inline">Carrinho</span>
-              <span className="mono-label text-primary">0</span>
-            </Button>
+            <UserRound className="size-4" aria-hidden />
+            <span className="hidden 2xl:inline">{auth.user ? l.account : l.signIn}</span>
           </Link>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="lg:hidden"
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Menu"
+          <Link
+            to="/carrinho"
+            className="relative inline-flex h-9 items-center gap-2 rounded-md border border-border px-3 text-sm font-semibold hover:border-primary/60"
+            aria-label={l.cartAria(count)}
           >
-            <Menu className="size-5" />
-          </Button>
+            <ShoppingCart className="size-4" aria-hidden />
+            <span className="hidden sm:inline">{l.cart}</span>
+            <AnimatePresence initial={false}>
+              {ready && count > 0 && (
+                <motion.span
+                  key={count}
+                  initial={{ scale: 0.6, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.6, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 28 }}
+                  className="grid min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[11px] font-bold tabular-nums text-primary-foreground"
+                >
+                  {count}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </Link>
+          <button
+            type="button"
+            className="xl:hidden inline-flex size-9 shrink-0 items-center justify-center rounded-md hover:bg-accent"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            aria-label={open ? l.closeMenu : l.openMenu}
+          >
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
         </div>
       </div>
 
-      {open && (
-        <div className="lg:hidden border-t border-border bg-surface">
-          <div className="container-page py-4 flex flex-col gap-3">
-            {NAV.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="text-sm font-semibold text-muted-foreground py-2"
-                onClick={() => setOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
-            <SearchBar compact />
+      <div
+        id="mobile-nav"
+        className={cn("xl:hidden max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-border bg-surface", open ? "block" : "hidden")}
+      >
+        <div className="container-page flex flex-col gap-1 py-4">
+          <SearchBar className="mb-3" />
+          {NAV.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className="rounded-md px-2 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-accent hover:text-foreground"
+              activeProps={{ className: "!text-foreground bg-accent" }}
+            >
+              {l.nav[item.key]}
+            </Link>
+          ))}
+          <div className="mt-3 flex items-center justify-between border-t border-border px-2 pt-4 sm:hidden">
+            <span className="text-sm font-semibold text-muted-foreground">{l.language}</span>
+            <LanguageSwitcher />
           </div>
         </div>
-      )}
+      </div>
     </header>
   );
 }

@@ -136,3 +136,30 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Centralinas — configuração
+
+1. `cp .env.example .env` e preencher `SUPABASE_SERVICE_ROLE_KEY` (só servidor) e `VITE_SITE_URL`.
+2. `npm i && npm run dev`
+3. Antes de cada entrega: `npm run build && npm run typecheck`.
+
+### Arquitetura
+
+| Camada | Onde | Notas |
+| --- | --- | --- |
+| Catálogo (leitura) | `src/lib/catalog.ts` | Chave pública + RLS. Funções SQL `search_catalog`, `get_product`, `catalog_facets`, `shipping_quote`. |
+| Encomendas, tracking, contactos | `src/lib/*.functions.ts` | `createServerFn` + Zod + rate limit + Turnstile + honeypot. Service role só dentro dos handlers. |
+| Checkout | `place_order` (SQL) | Recalcula preços, portes e IVA; reserva stock numa transação. |
+| Emails | tabela `email_outbox` | Fila preenchida automaticamente; falta o worker de envio (Resend/SMTP). |
+| Pagamentos | `src/lib/payments.ts` | Interface `PaymentProvider` para Stripe/PayPal (próxima fase). |
+| SEO | `src/lib/seo.ts`, `/sitemap.xml`, `/robots.txt` | URL canónico `/centralinas/[fabricante-referencia]`, JSON-LD `Product` + `BreadcrumbList`. |
+| Segurança HTTP | `src/server.ts` | CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy, redirecionamento HTTPS (produção). |
+
+### Base de dados
+
+Migrações em `supabase/migrations/`, dados de referência e produtos DEMO em `supabase/seed.sql`.
+Remover os produtos de demonstração antes do lançamento:
+
+```sql
+delete from public.products where sku like 'DEMO-%';
+```

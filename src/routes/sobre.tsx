@@ -12,20 +12,16 @@ import {
 import { motion } from "framer-motion";
 import { Stagger, StaggerItem } from "@/components/site/reveal";
 import { CountUp } from "@/components/site/count-up";
+import { headI18n, useT } from "@/lib/i18n";
 import { images } from "@/lib/images";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/sobre")({
   component: SobrePage,
-  head: () => ({
-    meta: [
-      { title: "Sobre Nós — Centralinas" },
-      {
-        name: "description",
-        content:
-          "20 anos a especializar-nos em eletrónica automóvel — o maior stock de centralinas da Europa.",
-      },
-    ],
-  }),
+  head: ({ match }) => {
+    const { locale, t } = headI18n(match);
+    return pageHead({ title: t.pages.about.metaTitle, description: t.pages.about.metaDescription, path: "/sobre", locale });
+  },
 });
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -48,34 +44,11 @@ const slideFrom = (dir: "left" | "right") => ({
   },
 });
 
-const processSteps = [
-  {
-    icon: Zap,
-    code: "01",
-    title: "Teste elétrico",
-    desc: "Verificação de tensões, resistências e integridade de pistas.",
-  },
-  {
-    icon: Radio,
-    code: "02",
-    title: "Simulação de sinais",
-    desc: "Bancada com simuladores de motor, ABS e sensores reais.",
-  },
-  {
-    icon: UploadCloud,
-    code: "03",
-    title: "Atualização de firmware",
-    desc: "Última revisão OEM aplicada quando aplicável.",
-  },
-  {
-    icon: KeyRound,
-    code: "04",
-    title: "Virginização",
-    desc: "Reset ao estado de fábrica para emparelhamento no veículo.",
-  },
-];
+const STEP_ICONS = [Zap, Radio, UploadCloud, KeyRound];
 
 function SobrePage() {
+  const a = useT().pages.about;
+  const processSteps = a.steps.map((s, i) => ({ ...s, icon: STEP_ICONS[i]!, code: `0${i + 1}` }));
   return (
     <>
       {/* HERO */}
@@ -102,21 +75,19 @@ function SobrePage() {
               variants={fadeUp}
               className="mono-label text-primary mb-3"
             >
-              Sobre
+              {a.label}
             </motion.div>
             <motion.h1
               variants={fadeUp}
               className="text-3xl md:text-5xl font-extrabold text-foreground leading-tight mb-6"
             >
-              20 anos a fornecer centralinas às oficinas da Europa.
+              {a.h1}
             </motion.h1>
             <motion.p
               variants={fadeUp}
               className="text-lg text-muted-foreground"
             >
-              Começámos numa oficina em 2004. Hoje somos referência europeia em
-              venda, reparação e reprogramação de eletrónica automóvel, com um
-              armazém de 250.000+ referências e um laboratório técnico dedicado.
+              {a.lead}
             </motion.p>
           </motion.div>
         </div>
@@ -126,19 +97,19 @@ function SobrePage() {
         {/* STATS */}
         <Stagger className="grid md:grid-cols-4 gap-6 mb-20">
           {[
-            { icon: Layers, value: 250000, suffix: "+", label: "Referências" },
-            { icon: Cpu, value: 60, suffix: "+", label: "Marcas suportadas" },
+            { icon: Layers, value: 250000, suffix: "+", label: a.stats[0] },
+            { icon: Cpu, value: 60, suffix: "+", label: a.stats[1] },
             {
               icon: Users,
               value: 3500,
               suffix: "+",
-              label: "Oficinas parceiras",
+              label: a.stats[2],
             },
             {
               icon: ShieldCheck,
               value: 20,
-              suffix: " anos",
-              label: "Know-how técnico",
+              suffix: a.years,
+              label: a.stats[3],
             },
           ].map((s) => (
             <StaggerItem key={s.label}>
@@ -165,14 +136,12 @@ function SobrePage() {
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
           >
-            <div className="mono-label text-primary mb-3">Missão</div>
+            <div className="mono-label text-primary mb-3">{a.mission}</div>
             <h2 className="text-2xl font-extrabold text-foreground mb-4">
-              Encurtar o tempo entre diagnóstico e reparação.
+              {a.missionTitle}
             </h2>
             <p className="text-muted-foreground">
-              O tempo do mecânico é o recurso mais caro da oficina. Existimos
-              para que a peça certa esteja disponível na primeira pesquisa —
-              com garantia, testada e enviada em 24 horas.
+              {a.missionText}
             </p>
           </motion.div>
           <motion.div
@@ -184,7 +153,7 @@ function SobrePage() {
           >
             <img
               src={images.warehouse}
-              alt="Armazém de centralinas"
+              alt={a.warehouseAlt}
               loading="lazy"
               className="h-full w-full object-cover img-treated transition-transform duration-[900ms] ease-out group-hover:scale-110"
             />
@@ -203,7 +172,7 @@ function SobrePage() {
           >
             <img
               src={images.team}
-              alt="Equipa técnica"
+              alt={a.teamAlt}
               loading="lazy"
               className="h-full w-full object-cover img-treated transition-transform duration-[900ms] ease-out group-hover:scale-110"
             />
@@ -216,14 +185,12 @@ function SobrePage() {
             viewport={{ once: true, margin: "-80px" }}
             className="md:order-2 order-1"
           >
-            <div className="mono-label text-primary mb-3">Como trabalhamos</div>
+            <div className="mono-label text-primary mb-3">{a.how}</div>
             <h2 className="text-2xl font-extrabold text-foreground mb-4">
-              Cada centralina passa por bancada de teste.
+              {a.howTitle}
             </h2>
             <p className="text-muted-foreground">
-              Recondicionamos hardware em laboratório próprio: teste elétrico,
-              simulação de sinais, atualização de firmware e virginização
-              quando aplicável. Só depois entra em stock.
+              {a.howText}
             </p>
           </motion.div>
         </div>

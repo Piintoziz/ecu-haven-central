@@ -1,142 +1,206 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Search, X } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { CornerDownLeft, Loader2, Search, X } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
+import { suggestProducts } from "@/lib/catalog";
+import { normalizeReference } from "@/lib/format";
+import type { Suggestion } from "@/lib/types";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import { products } from "@/lib/mock-data";
 
 interface Props {
-  compact?: boolean;
+  size?: "lg" | "md";
+  defaultValue?: string;
   autoFocus?: boolean;
+  className?: string;
 }
 
-export function SearchBar({ compact, autoFocus }: Props) {
-  const [query, setQuery] = useState("");
-  const [focused, setFocused] = useState(false);
+const EXAMPLES = ["0281016000", "EDC17C46", "03L906023", "SID807"];
+
+export function SearchBar({ size = "md", defaultValue = "", autoFocus, className }: Props) {
   const navigate = useNavigate();
-  const ref = useRef<HTMLInputElement>(null);
+  const s = useT().layout.search;
+  const listId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [query, setQuery] = useState(defaultValue);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [items, setItems] = useState<Suggestion[]>([]);
+  const [active, setActive] = useState(-1);
 
-  // TODO(backend): trocar por endpoint real de autocomplete (Meilisearch/Algolia).
-  const suggestions = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-    return products
-      .filter(
-        (p) =>
-          p.oem.toLowerCase().includes(q) ||
-          p.title.toLowerCase().includes(q) ||
-          p.make.toLowerCase().includes(q) ||
-          p.models.some((m) => m.toLowerCase().includes(q)),
-      )
-      .slice(0, 6);
-  }, [query]);
+  useEffect(() => setQuery(defaultValue), [defaultValue]);
 
-  function submit(id?: string) {
-    if (id) {
-      navigate({ to: "/produto/$id", params: { id } });
+  // Autocomplete por referência normalizada (debounce 180 ms)
+  useEffect(() => {
+    const norm = normalizeReference(query);
+    if (norm.length < 3) {
+      setItems([]);
+      setLoading(false);
       return;
     }
-    navigate({ to: "/catalogo", search: { q: query } });
+    let cancelled = false;
+    setLoading(true);
+    const t = setTimeout(async () => {
+      const res = await suggestProducts(query);
+      if (!cancelled) {
+        setItems(res);
+        setActive(-1);
+        setLoading(false);
+      }
+    }, 180);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [query]);
+
+  function goToProduct(slug: string) {
+    setOpen(false);
+    navigate({ to: "/centralinas/$slug", params: { slug } });
   }
 
+  function submit() {
+    const q = query.trim().slice(0, 80);
+    setOpen(false);
+    navigate({ to: "/catalogo", search: q ? { q } : {} });
+  }
+
+  const showList = open && items.length > 0;
+  const lg = size === "lg";
+
   return (
-    <div className={cn("relative w-full", compact ? "max-w-full" : "max-w-2xl")}>
+    <div className={cn("relative w-full", className)}>
       <form
+        role="search"
         onSubmit={(e) => {
           e.preventDefault();
-          submit();
+          if (active >= 0 && items[active]) goToProduct(items[active].slug);
+          else submit();
         }}
         className={cn(
-          "relative flex items-center gap-2 rounded-xl border border-border bg-surface p-2 transition-all",
-          focused && "border-primary/60 ring-2 ring-primary/20",
+          "flex items-center gap-2 rounded-lg border border-border bg-background transition-[border-color,box-shadow] focus-within:border-primary/70 focus-within:ring-2 focus-within:ring-primary/20",
+          lg ? "p-1.5 pl-4" : "p-1 pl-3",
         )}
       >
-        <Search className="size-5 text-muted-foreground ml-2 shrink-0" />
+        <Search className={cn("shrink-0 text-muted-foreground", lg ? "size-5" : "size-4")} aria-hidden />
         <input
-          ref={ref}
+          ref={inputRef}
+          type="search"
+          inputMode="search"
+          autoComplete="off"
+          spellCheck={false}
           autoFocus={autoFocus}
+          maxLength={80}
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setTimeout(() => setFocused(false), 150)}
-          placeholder={
-            compact
-              ? "Referência OEM, marca ou modelo…"
-              : "Pesquisar por referência OEM (ex: 0281016000), marca ou modelo…"
-          }
-          className="flex-1 bg-transparent px-1 py-2 text-sm font-mono text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
+          role="combobox"
+          aria-expanded={showList}
+          aria-controls={listId}
+          aria-autocomplete="list"
+          aria-activedescendant={active >= 0 ? `${listId}-${active}` : undefined}
+          aria-label={s.aria}
+          placeholder={lg ? s.placeholderLg : s.placeholder}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setTimeout(() => setOpen(false), 120)}
+          onKeyDown={(e) => {
+            if (!showList) return;
+            if (e.key === "ArrowDown") {
+              e.preventDefault();
+              setActive((i) => (i + 1) % items.length);
+            } else if (e.key === "ArrowUp") {
+              e.preventDefault();
+              setActive((i) => (i <= 0 ? items.length - 1 : i - 1));
+            } else if (e.key === "Escape") {
+              setOpen(false);
+            }
+          }}
+          className={cn(
+            "w-0 min-w-0 flex-1 bg-transparent font-mono text-foreground placeholder:font-sans placeholder:text-muted-foreground/70 focus:outline-none [&::-webkit-search-cancel-button]:hidden",
+            lg ? "py-2.5 text-base" : "py-1.5 text-sm",
+          )}
         />
-        {query && (
+        {loading && <Loader2 className="size-4 animate-spin text-muted-foreground" aria-hidden />}
+        {query && !loading && (
           <button
             type="button"
             onClick={() => {
               setQuery("");
-              ref.current?.focus();
+              inputRef.current?.focus();
             }}
-            className="p-1 text-muted-foreground hover:text-foreground"
-            aria-label="Limpar"
+            className="rounded p-1 text-muted-foreground hover:text-foreground"
+            aria-label={s.clear}
           >
             <X className="size-4" />
           </button>
         )}
         <button
           type="submit"
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:opacity-90 transition-opacity"
+          className={cn(
+            "shrink-0 rounded-md bg-primary font-bold text-primary-foreground transition-opacity hover:opacity-90",
+            lg ? "px-5 py-2.5 text-sm" : "px-3 py-1.5 text-xs",
+          )}
         >
-          Pesquisar
+          {s.submit}
         </button>
       </form>
 
-      {focused && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 rounded-xl border border-border bg-surface-elevated shadow-2xl overflow-hidden z-50">
-          <div className="mono-label px-4 pt-3 pb-2">
-            {suggestions.length} resultados sugeridos
-          </div>
-          <ul>
-            {suggestions.map((p) => (
-              <li key={p.id}>
-                <button
-                  type="button"
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    submit(p.id);
-                  }}
-                  className="w-full text-left px-4 py-3 hover:bg-accent flex items-center justify-between gap-4 border-t border-border"
-                >
-                  <div className="min-w-0">
-                    <div className="text-sm font-semibold text-foreground truncate">
-                      {p.title}
-                    </div>
-                    <div className="text-xs text-muted-foreground truncate">
-                      {p.make} · {p.models[0]}
-                    </div>
-                  </div>
-                  <div className="font-mono text-xs text-primary shrink-0">
-                    {p.oem}
-                  </div>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+      {showList && (
+        <ul
+          id={listId}
+          role="listbox"
+          className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-border bg-surface-elevated shadow-2xl"
+        >
+          {items.map((it, i) => (
+            <li
+              key={`${it.slug}-${it.reference}`}
+              id={`${listId}-${i}`}
+              role="option"
+              aria-selected={i === active}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                goToProduct(it.slug);
+              }}
+              onMouseEnter={() => setActive(i)}
+              className={cn(
+                "flex cursor-pointer items-center justify-between gap-4 border-t border-border px-4 py-2.5 first:border-t-0",
+                i === active && "bg-accent",
+              )}
+            >
+              <div className="min-w-0">
+                <div className="font-mono text-sm font-bold text-foreground">{it.reference}</div>
+                <div className="truncate text-xs text-muted-foreground">
+                  {it.manufacturer ? `${it.manufacturer} · ` : ""}
+                  {it.title}
+                </div>
+              </div>
+              {i === active && <CornerDownLeft className="size-4 shrink-0 text-primary" aria-hidden />}
+            </li>
+          ))}
+          <li className="border-t border-border bg-surface px-4 py-2 text-xs text-muted-foreground">
+            {s.enterAll(query.trim())}
+          </li>
+        </ul>
       )}
 
-      {!compact && (
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="mono-label">Sugestões:</span>
-          {["Bosch EDC17", "Siemens SID807", "Delphi DCM6.2", "0281016000"].map(
-            (s) => (
-              <button
-                key={s}
-                onClick={() => {
-                  setQuery(s);
-                  ref.current?.focus();
-                }}
-                className="rounded-md border border-border bg-surface px-2 py-1 text-[11px] font-mono text-muted-foreground hover:border-primary hover:text-primary transition-colors"
-              >
-                {s}
-              </button>
-            ),
-          )}
+      {lg && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+          <span className="text-muted-foreground">{s.examples}</span>
+          {EXAMPLES.map((ex) => (
+            <button
+              key={ex}
+              type="button"
+              onClick={() => {
+                setQuery(ex);
+                setOpen(true);
+                inputRef.current?.focus();
+              }}
+              className="rounded border border-border px-2 py-0.5 font-mono text-muted-foreground transition-colors hover:border-primary/60 hover:text-foreground"
+            >
+              {ex}
+            </button>
+          ))}
         </div>
       )}
     </div>

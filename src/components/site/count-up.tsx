@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "framer-motion";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   end: number;
@@ -36,9 +37,10 @@ export function CountUp({
     return () => cancelAnimationFrame(raf);
   }, [inView, end, duration]);
 
+  const intl = useT().common.intl;
   const shown = format
     ? format(value)
-    : Math.round(value).toLocaleString("pt-PT");
+    : Math.round(value).toLocaleString(intl);
 
   return (
     <span ref={ref} className={className}>

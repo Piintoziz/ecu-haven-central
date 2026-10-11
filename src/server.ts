@@ -44,18 +44,81 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Cabeçalhos de segurança + HTTPS obrigatório (apenas em produção, para não
+// interferir com o HMR do Vite em desenvolvimento).
+// ---------------------------------------------------------------------------
+const SUPABASE_ORIGIN = (() => {
+  try {
+    return new URL(import.meta.env.VITE_SUPABASE_URL as string).origin;
+  } catch {
+    return "https://*.supabase.co";
+  }
+})();
+
+const CSP = [
+  "default-src 'self'",
+  // TanStack Start injeta scripts inline de hidratação -> 'unsafe-inline' (sem eval)
+  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  // images.unsplash.com: fotografias da página Sobre (remover quando houver fotos próprias)
+  `img-src 'self' data: blob: ${SUPABASE_ORIGIN} https://images.unsplash.com`,
+  `connect-src 'self' ${SUPABASE_ORIGIN} https://challenges.cloudflare.com`,
+  "frame-src https://challenges.cloudflare.com",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "object-src 'none'",
+  "upgrade-insecure-requests",
+].join("; ");
+
+const SECURITY_HEADERS: Record<string, string> = {
+  "Content-Security-Policy": CSP,
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+  "X-Frame-Options": "DENY",
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(self)",
+  "Cross-Origin-Opener-Policy": "same-origin",
+};
+
+const isLocalHost = (host: string) => /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host);
+
+function withSecurityHeaders(response: Response): Response {
+  if (!import.meta.env.PROD) return response;
+  const headers = new Headers(response.headers);
+  for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
+    if (!headers.has(key)) headers.set(key, value);
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    const url = new URL(request.url);
+    const proto = request.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "");
+    if (import.meta.env.PROD && proto === "http" && !isLocalHost(url.host)) {
+      url.protocol = "https:";
+      return Response.redirect(url.toString(), 301);
+    }
+
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      return withSecurityHeaders(await normalizeCatastrophicSsrResponse(response));
     } catch (error) {
       console.error(error);
-      return new Response(renderErrorPage(), {
-        status: 500,
-        headers: { "content-type": "text/html; charset=utf-8" },
-      });
+      return withSecurityHeaders(
+        new Response(renderErrorPage(), {
+          status: 500,
+          headers: { "content-type": "text/html; charset=utf-8" },
+        }),
+      );
     }
   },
 };

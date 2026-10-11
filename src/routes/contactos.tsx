@@ -1,141 +1,195 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Clock, Mail, MapPin, Phone } from "lucide-react";
-import { useState } from "react";
+import { motion } from "framer-motion";
+import { Check, Clock, Loader2, Mail, MapPin, Phone, Send } from "lucide-react";
+import { useCallback, useState, type ReactNode } from "react";
+import { useForm, type Path } from "react-hook-form";
+import { z } from "zod";
+import { FieldWrap, Honeypot, TextArea, TextInput } from "@/components/site/form-field";
+import { Turnstile } from "@/components/site/turnstile";
 import { Button } from "@/components/ui/button";
+import { submitContact } from "@/lib/contact.functions";
+import { COMPANY } from "@/lib/content";
+import { contactInputSchema } from "@/lib/schemas";
+import { headI18n, useI18n } from "@/lib/i18n";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/contactos")({
+  validateSearch: (s: Record<string, unknown>) =>
+    z
+      .object({ ref: z.string().max(64).regex(/^[A-Za-z0-9 .\-/]*$/).optional().catch(undefined) })
+      .parse(s),
+  head: ({ match }) => {
+    const { locale, t } = headI18n(match);
+    return pageHead({ title: t.info.contact.metaTitle, description: t.info.contact.metaDescription, path: "/contactos", locale });
+  },
   component: ContactosPage,
-  head: () => ({
-    meta: [
-      { title: "Contactos — Centralinas" },
-      {
-        name: "description",
-        content:
-          "Fale com a nossa equipa técnica. Respondemos a orçamentos em minutos.",
-      },
-    ],
-  }),
 });
 
+type FormValues = {
+  name: string;
+  company: string;
+  email: string;
+  phone: string;
+  product_reference: string;
+  vin: string;
+  message: string;
+  website: string;
+};
+
 function ContactosPage() {
+  const { ref } = Route.useSearch();
   const [sent, setSent] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [token, setToken] = useState<string | undefined>();
+  const onToken = useCallback((tk: string | undefined) => setToken(tk), []);
+  const { t, locale } = useI18n();
+  const c = t.info.contact;
+  const msg = (m?: string) => (m ? t.common.msg(m) : undefined);
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>({
+    defaultValues: {
+      name: "",
+      company: "",
+      email: "",
+      phone: "",
+      product_reference: ref ?? "",
+      vin: "",
+      message: "",
+      website: "",
+    },
+  });
+
+  async function onSubmit(values: FormValues) {
+    setServerError(null);
+    const payload = { ...values, turnstile_token: token, locale };
+    const parsed = contactInputSchema.safeParse(payload);
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues) {
+        setError(issue.path.join(".") as Path<FormValues>, { message: issue.message });
+      }
+      return;
+    }
+    try {
+      const res = await submitContact({ data: payload });
+      if (res.ok) setSent(true);
+      else setServerError(res.error);
+    } catch {
+      setServerError(c.failed);
+    }
+  }
 
   return (
     <div className="container-page py-12 md:py-16">
-      <div className="max-w-2xl mb-12">
-        <div className="mono-label text-primary mb-3">Contactos</div>
-        <h1 className="text-3xl md:text-4xl font-extrabold text-foreground mb-4">
-          Fale com um técnico
-        </h1>
-        <p className="text-muted-foreground">
-          Envie a referência OEM ou descreva o problema. Respondemos por email
-          ou telefone em minutos.
+      <div className="max-w-2xl">
+        <h1 className="text-3xl font-extrabold md:text-4xl">{c.title}</h1>
+        <p className="mt-3 text-muted-foreground">
+          {c.lead}
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-[1fr_360px] gap-10">
-        {/* TODO(backend): ligar submissão a API real de contactos / CRM */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            setSent(true);
-          }}
-          className="surface-card p-6 md:p-8"
-        >
+      <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_340px]">
+        <div className="relative rounded-xl border border-border bg-surface p-6 md:p-8">
           {sent ? (
-            <div className="text-center py-10">
-              <div className="mono-label text-primary mb-3">Recebido</div>
-              <h2 className="text-2xl font-extrabold text-foreground mb-3">
-                Obrigado!
-              </h2>
-              <p className="text-muted-foreground">
-                Vamos responder no máximo em 2h úteis.
-              </p>
-            </div>
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="py-10 text-center">
+              <div className="mx-auto grid size-12 place-items-center rounded-full bg-success/15">
+                <Check className="size-6 text-success" aria-hidden />
+              </div>
+              <h2 className="mt-4 text-2xl font-extrabold">{c.sentTitle}</h2>
+              <p className="mt-2 text-muted-foreground">{c.sentText}</p>
+            </motion.div>
           ) : (
-            <>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <Field label="Nome" placeholder="O seu nome" />
-                <Field label="Empresa" placeholder="Nome da oficina" />
-                <Field label="Email" type="email" placeholder="email@dominio.pt" />
-                <Field label="Telefone" placeholder="+351 …" />
+            <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+              <Honeypot {...register("website")} />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FieldWrap id="name" label={c.name} error={msg(errors.name?.message)}>
+                  <TextInput id="name" autoComplete="name" invalid={!!errors.name} {...register("name")} />
+                </FieldWrap>
+                <FieldWrap id="company" label={c.company} optional>
+                  <TextInput id="company" autoComplete="organization" {...register("company")} />
+                </FieldWrap>
+                <FieldWrap id="email" label={c.email} error={msg(errors.email?.message)}>
+                  <TextInput id="email" type="email" autoComplete="email" invalid={!!errors.email} {...register("email")} />
+                </FieldWrap>
+                <FieldWrap id="phone" label={c.phone} optional error={msg(errors.phone?.message)}>
+                  <TextInput id="phone" type="tel" autoComplete="tel" invalid={!!errors.phone} {...register("phone")} />
+                </FieldWrap>
+                <FieldWrap id="product_reference" label={c.ref} optional error={msg(errors.product_reference?.message)} hint={c.refHint}>
+                  <TextInput id="product_reference" className="font-mono" invalid={!!errors.product_reference} {...register("product_reference")} />
+                </FieldWrap>
+                <FieldWrap id="vin" label={c.vin} optional error={msg(errors.vin?.message)}>
+                  <TextInput id="vin" className="font-mono uppercase" maxLength={17} invalid={!!errors.vin} {...register("vin")} />
+                </FieldWrap>
               </div>
-              <div className="mt-4">
-                <Field label="Referência OEM (opcional)" placeholder="Ex: 0281016000" />
-              </div>
-              <div className="mt-4">
-                <label className="mono-label mb-2 block">Mensagem</label>
-                <textarea
+              <FieldWrap id="message" label={c.message} error={msg(errors.message?.message)}>
+                <TextArea
+                  id="message"
                   rows={5}
-                  placeholder="Descreva o problema ou a peça que procura"
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/60"
+                  placeholder={c.messagePlaceholder}
+                  invalid={!!errors.message}
+                  {...register("message")}
                 />
+              </FieldWrap>
+              <Turnstile onToken={onToken} />
+              {serverError && (
+                <p role="alert" className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                  {t.common.msg(serverError)}
+                </p>
+              )}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <p className="text-xs text-muted-foreground">
+                  {c.privacy1}{" "}
+                  <a href="/privacidade" target="_blank" rel="noopener" className="font-semibold text-foreground hover:underline">
+                    {c.privacyLink}
+                  </a>
+                  .
+                </p>
+                <Button type="submit" size="lg" className="font-bold" disabled={isSubmitting}>
+                  {isSubmitting ? <Loader2 className="animate-spin" /> : <Send />}
+                  {c.submit}
+                </Button>
               </div>
-              <Button type="submit" size="lg" className="mt-6 w-full sm:w-auto">
-                Enviar pedido
-              </Button>
-            </>
+            </form>
           )}
-        </form>
+        </div>
 
-        <aside className="space-y-4">
-          <InfoCard icon={Phone} label="Telefone" value="+351 220 000 000" />
-          <InfoCard icon={Mail} label="Email" value="geral@centralinas.pt" />
-          <InfoCard
-            icon={MapPin}
-            label="Morada"
-            value="Zona Industrial Norte, Porto, Portugal"
-          />
-          <InfoCard
-            icon={Clock}
-            label="Horário"
-            value="Seg–Sex 09h–19h · Sáb 09h–13h"
-          />
+        <aside className="space-y-6">
+          <ul className="divide-y divide-border rounded-xl border border-border text-sm">
+            <Info icon={Phone} label={c.phone}>
+              <a href={COMPANY.phoneHref} className="hover:text-primary">{COMPANY.phone}</a>
+            </Info>
+            <Info icon={Mail} label={c.email}>
+              <a href={`mailto:${COMPANY.email}`} className="hover:text-primary">{COMPANY.email}</a>
+            </Info>
+            <Info icon={MapPin} label={c.address}>{COMPANY.address}</Info>
+            <Info icon={Clock} label={c.hours}>{t.layout.hours}</Info>
+          </ul>
+          <div className="rounded-xl border border-border p-5 text-sm">
+            <h2 className="font-bold">{c.faster}</h2>
+            <ol className="mt-3 list-decimal space-y-1.5 pl-5 text-muted-foreground">
+              {c.fasterList.map((x) => (
+                <li key={x}>{x}</li>
+              ))}
+            </ol>
+          </div>
         </aside>
       </div>
     </div>
   );
 }
 
-function Field({
-  label,
-  placeholder,
-  type = "text",
-}: {
-  label: string;
-  placeholder?: string;
-  type?: string;
-}) {
+function Info({ icon: Icon, label, children }: { icon: typeof Phone; label: string; children: ReactNode }) {
   return (
-    <div>
-      <label className="mono-label mb-2 block">{label}</label>
-      <input
-        type={type}
-        placeholder={placeholder}
-        className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/60"
-      />
-    </div>
-  );
-}
-
-function InfoCard({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof Phone;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="surface-card p-5 flex items-start gap-4">
-      <div className="grid size-10 place-items-center rounded-md bg-primary/10 shrink-0">
-        <Icon className="size-4 text-primary" />
+    <li className="flex gap-4 p-4">
+      <Icon className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+      <div>
+        <p className="mono-label mb-0.5">{label}</p>
+        <div className="text-foreground">{children}</div>
       </div>
-      <div className="min-w-0">
-        <div className="mono-label mb-1">{label}</div>
-        <div className="text-sm font-bold text-foreground">{value}</div>
-      </div>
-    </div>
+    </li>
   );
 }

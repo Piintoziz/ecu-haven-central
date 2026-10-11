@@ -9,44 +9,49 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SobreRouteImport } from './routes/sobre'
-import { Route as ServicosRouteImport } from './routes/servicos'
-import { Route as EncomendaRouteImport } from './routes/encomenda'
-import { Route as ContactosRouteImport } from './routes/contactos'
-import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as CatalogoRouteImport } from './routes/catalogo'
-import { Route as CarrinhoRouteImport } from './routes/carrinho'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as CarrinhoRouteImport } from './routes/carrinho'
+import { Route as CatalogoRouteImport } from './routes/catalogo'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as ContaRouteImport } from './routes/conta'
+import { Route as ContactosRouteImport } from './routes/contactos'
+import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as EncomendaRouteImport } from './routes/encomenda'
+import { Route as EntrarRouteImport } from './routes/entrar'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as RecuperarPasswordRouteImport } from './routes/recuperar-password'
+import { Route as RegistarRouteImport } from './routes/registar'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as ServicosRouteImport } from './routes/servicos'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SobreRouteImport } from './routes/sobre'
+import { Route as TermosRouteImport } from './routes/termos'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminDefinicoesRouteImport } from './routes/admin.definicoes'
+import { Route as AdminImportarRouteImport } from './routes/admin.importar'
+import { Route as AdminMensagensRouteImport } from './routes/admin.mensagens'
+import { Route as CentralinasSlugRouteImport } from './routes/centralinas.$slug'
+import { Route as ContaIndexRouteImport } from './routes/conta.index'
+import { Route as ContaPasswordRouteImport } from './routes/conta.password'
+import { Route as ContaPerfilRouteImport } from './routes/conta.perfil'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
+import { Route as AdminEncomendasIndexRouteImport } from './routes/admin.encomendas.index'
+import { Route as AdminEncomendasIdRouteImport } from './routes/admin.encomendas.$id'
+import { Route as AdminProdutosIndexRouteImport } from './routes/admin.produtos.index'
+import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
+import { Route as ApiEmailsProcessRouteImport } from './routes/api.emails.process'
+import { Route as ContaEncomendasCodeRouteImport } from './routes/conta.encomendas.$code'
 
-const SobreRoute = SobreRouteImport.update({
-  id: '/sobre',
-  path: '/sobre',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ServicosRoute = ServicosRouteImport.update({
-  id: '/servicos',
-  path: '/servicos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EncomendaRoute = EncomendaRouteImport.update({
-  id: '/encomenda',
-  path: '/encomenda',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactosRoute = ContactosRouteImport.update({
-  id: '/contactos',
-  path: '/contactos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CatalogoRoute = CatalogoRouteImport.update({
-  id: '/catalogo',
-  path: '/catalogo',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CarrinhoRoute = CarrinhoRouteImport.update({
@@ -54,27 +59,197 @@ const CarrinhoRoute = CarrinhoRouteImport.update({
   path: '/carrinho',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const CatalogoRoute = CatalogoRouteImport.update({
+  id: '/catalogo',
+  path: '/catalogo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContaRoute = ContaRouteImport.update({
+  id: '/conta',
+  path: '/conta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactosRoute = ContactosRouteImport.update({
+  id: '/contactos',
+  path: '/contactos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EncomendaRoute = EncomendaRouteImport.update({
+  id: '/encomenda',
+  path: '/encomenda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EntrarRoute = EntrarRouteImport.update({
+  id: '/entrar',
+  path: '/entrar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecuperarPasswordRoute = RecuperarPasswordRouteImport.update({
+  id: '/recuperar-password',
+  path: '/recuperar-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistarRoute = RegistarRouteImport.update({
+  id: '/registar',
+  path: '/registar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicosRoute = ServicosRouteImport.update({
+  id: '/servicos',
+  path: '/servicos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDefinicoesRoute = AdminDefinicoesRouteImport.update({
+  id: '/definicoes',
+  path: '/definicoes',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminImportarRoute = AdminImportarRouteImport.update({
+  id: '/importar',
+  path: '/importar',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMensagensRoute = AdminMensagensRouteImport.update({
+  id: '/mensagens',
+  path: '/mensagens',
+  getParentRoute: () => AdminRoute,
+} as any)
+const CentralinasSlugRoute = CentralinasSlugRouteImport.update({
+  id: '/centralinas/$slug',
+  path: '/centralinas/$slug',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ContaIndexRoute = ContaIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ContaRoute,
+} as any)
+const ContaPasswordRoute = ContaPasswordRouteImport.update({
+  id: '/password',
+  path: '/password',
+  getParentRoute: () => ContaRoute,
+} as any)
+const ContaPerfilRoute = ContaPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => ContaRoute,
 } as any)
 const ProdutoIdRoute = ProdutoIdRouteImport.update({
   id: '/produto/$id',
   path: '/produto/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminEncomendasIndexRoute = AdminEncomendasIndexRouteImport.update({
+  id: '/encomendas/',
+  path: '/encomendas/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEncomendasIdRoute = AdminEncomendasIdRouteImport.update({
+  id: '/encomendas/$id',
+  path: '/encomendas/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProdutosIndexRoute = AdminProdutosIndexRouteImport.update({
+  id: '/produtos/',
+  path: '/produtos/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProdutosIdRoute = AdminProdutosIdRouteImport.update({
+  id: '/produtos/$id',
+  path: '/produtos/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
+const ApiEmailsProcessRoute = ApiEmailsProcessRouteImport.update({
+  id: '/api/emails/process',
+  path: '/api/emails/process',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContaEncomendasCodeRoute = ContaEncomendasCodeRouteImport.update({
+  id: '/encomendas/$code',
+  path: '/encomendas/$code',
+  getParentRoute: () => ContaRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/carrinho': typeof CarrinhoRoute
   '/catalogo': typeof CatalogoRoute
   '/checkout': typeof CheckoutRoute
+  '/conta': typeof ContaRouteWithChildren
   '/contactos': typeof ContactosRoute
+  '/cookies': typeof CookiesRoute
   '/encomenda': typeof EncomendaRoute
+  '/entrar': typeof EntrarRoute
+  '/faq': typeof FaqRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/recuperar-password': typeof RecuperarPasswordRoute
+  '/registar': typeof RegistarRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/servicos': typeof ServicosRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
+  '/admin/definicoes': typeof AdminDefinicoesRoute
+  '/admin/importar': typeof AdminImportarRoute
+  '/admin/mensagens': typeof AdminMensagensRoute
+  '/centralinas/$slug': typeof CentralinasSlugRoute
+  '/conta/password': typeof ContaPasswordRoute
+  '/conta/perfil': typeof ContaPerfilRoute
   '/produto/$id': typeof ProdutoIdRoute
+  '/admin/': typeof AdminIndexRoute
+  '/conta/': typeof ContaIndexRoute
+  '/admin/encomendas/$id': typeof AdminEncomendasIdRoute
+  '/admin/produtos/$id': typeof AdminProdutosIdRoute
+  '/api/emails/process': typeof ApiEmailsProcessRoute
+  '/conta/encomendas/$code': typeof ContaEncomendasCodeRoute
+  '/admin/encomendas/': typeof AdminEncomendasIndexRoute
+  '/admin/produtos/': typeof AdminProdutosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -82,35 +257,108 @@ export interface FileRoutesByTo {
   '/catalogo': typeof CatalogoRoute
   '/checkout': typeof CheckoutRoute
   '/contactos': typeof ContactosRoute
+  '/cookies': typeof CookiesRoute
   '/encomenda': typeof EncomendaRoute
+  '/entrar': typeof EntrarRoute
+  '/faq': typeof FaqRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/recuperar-password': typeof RecuperarPasswordRoute
+  '/registar': typeof RegistarRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/servicos': typeof ServicosRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
+  '/admin/definicoes': typeof AdminDefinicoesRoute
+  '/admin/importar': typeof AdminImportarRoute
+  '/admin/mensagens': typeof AdminMensagensRoute
+  '/centralinas/$slug': typeof CentralinasSlugRoute
+  '/conta/password': typeof ContaPasswordRoute
+  '/conta/perfil': typeof ContaPerfilRoute
   '/produto/$id': typeof ProdutoIdRoute
+  '/admin': typeof AdminIndexRoute
+  '/conta': typeof ContaIndexRoute
+  '/admin/encomendas/$id': typeof AdminEncomendasIdRoute
+  '/admin/produtos/$id': typeof AdminProdutosIdRoute
+  '/api/emails/process': typeof ApiEmailsProcessRoute
+  '/conta/encomendas/$code': typeof ContaEncomendasCodeRoute
+  '/admin/encomendas': typeof AdminEncomendasIndexRoute
+  '/admin/produtos': typeof AdminProdutosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/carrinho': typeof CarrinhoRoute
   '/catalogo': typeof CatalogoRoute
   '/checkout': typeof CheckoutRoute
+  '/conta': typeof ContaRouteWithChildren
   '/contactos': typeof ContactosRoute
+  '/cookies': typeof CookiesRoute
   '/encomenda': typeof EncomendaRoute
+  '/entrar': typeof EntrarRoute
+  '/faq': typeof FaqRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/recuperar-password': typeof RecuperarPasswordRoute
+  '/registar': typeof RegistarRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/servicos': typeof ServicosRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
+  '/admin/definicoes': typeof AdminDefinicoesRoute
+  '/admin/importar': typeof AdminImportarRoute
+  '/admin/mensagens': typeof AdminMensagensRoute
+  '/centralinas/$slug': typeof CentralinasSlugRoute
+  '/conta/password': typeof ContaPasswordRoute
+  '/conta/perfil': typeof ContaPerfilRoute
   '/produto/$id': typeof ProdutoIdRoute
+  '/admin/': typeof AdminIndexRoute
+  '/conta/': typeof ContaIndexRoute
+  '/admin/encomendas/$id': typeof AdminEncomendasIdRoute
+  '/admin/produtos/$id': typeof AdminProdutosIdRoute
+  '/api/emails/process': typeof ApiEmailsProcessRoute
+  '/conta/encomendas/$code': typeof ContaEncomendasCodeRoute
+  '/admin/encomendas/': typeof AdminEncomendasIndexRoute
+  '/admin/produtos/': typeof AdminProdutosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/carrinho'
     | '/catalogo'
     | '/checkout'
+    | '/conta'
     | '/contactos'
+    | '/cookies'
     | '/encomenda'
+    | '/entrar'
+    | '/faq'
+    | '/privacidade'
+    | '/recuperar-password'
+    | '/registar'
+    | '/robots.txt'
     | '/servicos'
+    | '/sitemap.xml'
     | '/sobre'
+    | '/termos'
+    | '/admin/definicoes'
+    | '/admin/importar'
+    | '/admin/mensagens'
+    | '/centralinas/$slug'
+    | '/conta/password'
+    | '/conta/perfil'
     | '/produto/$id'
+    | '/admin/'
+    | '/conta/'
+    | '/admin/encomendas/$id'
+    | '/admin/produtos/$id'
+    | '/api/emails/process'
+    | '/conta/encomendas/$code'
+    | '/admin/encomendas/'
+    | '/admin/produtos/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -118,77 +366,110 @@ export interface FileRouteTypes {
     | '/catalogo'
     | '/checkout'
     | '/contactos'
+    | '/cookies'
     | '/encomenda'
+    | '/entrar'
+    | '/faq'
+    | '/privacidade'
+    | '/recuperar-password'
+    | '/registar'
+    | '/robots.txt'
     | '/servicos'
+    | '/sitemap.xml'
     | '/sobre'
+    | '/termos'
+    | '/admin/definicoes'
+    | '/admin/importar'
+    | '/admin/mensagens'
+    | '/centralinas/$slug'
+    | '/conta/password'
+    | '/conta/perfil'
     | '/produto/$id'
+    | '/admin'
+    | '/conta'
+    | '/admin/encomendas/$id'
+    | '/admin/produtos/$id'
+    | '/api/emails/process'
+    | '/conta/encomendas/$code'
+    | '/admin/encomendas'
+    | '/admin/produtos'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/carrinho'
     | '/catalogo'
     | '/checkout'
+    | '/conta'
     | '/contactos'
+    | '/cookies'
     | '/encomenda'
+    | '/entrar'
+    | '/faq'
+    | '/privacidade'
+    | '/recuperar-password'
+    | '/registar'
+    | '/robots.txt'
     | '/servicos'
+    | '/sitemap.xml'
     | '/sobre'
+    | '/termos'
+    | '/admin/definicoes'
+    | '/admin/importar'
+    | '/admin/mensagens'
+    | '/centralinas/$slug'
+    | '/conta/password'
+    | '/conta/perfil'
     | '/produto/$id'
+    | '/admin/'
+    | '/conta/'
+    | '/admin/encomendas/$id'
+    | '/admin/produtos/$id'
+    | '/api/emails/process'
+    | '/conta/encomendas/$code'
+    | '/admin/encomendas/'
+    | '/admin/produtos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   CarrinhoRoute: typeof CarrinhoRoute
   CatalogoRoute: typeof CatalogoRoute
   CheckoutRoute: typeof CheckoutRoute
+  ContaRoute: typeof ContaRouteWithChildren
   ContactosRoute: typeof ContactosRoute
+  CookiesRoute: typeof CookiesRoute
   EncomendaRoute: typeof EncomendaRoute
+  EntrarRoute: typeof EntrarRoute
+  FaqRoute: typeof FaqRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
+  RecuperarPasswordRoute: typeof RecuperarPasswordRoute
+  RegistarRoute: typeof RegistarRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
   ServicosRoute: typeof ServicosRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SobreRoute: typeof SobreRoute
+  TermosRoute: typeof TermosRoute
+  CentralinasSlugRoute: typeof CentralinasSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
+  ApiEmailsProcessRoute: typeof ApiEmailsProcessRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sobre': {
-      id: '/sobre'
-      path: '/sobre'
-      fullPath: '/sobre'
-      preLoaderRoute: typeof SobreRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/servicos': {
-      id: '/servicos'
-      path: '/servicos'
-      fullPath: '/servicos'
-      preLoaderRoute: typeof ServicosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/encomenda': {
-      id: '/encomenda'
-      path: '/encomenda'
-      fullPath: '/encomenda'
-      preLoaderRoute: typeof EncomendaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contactos': {
-      id: '/contactos'
-      path: '/contactos'
-      fullPath: '/contactos'
-      preLoaderRoute: typeof ContactosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/catalogo': {
-      id: '/catalogo'
-      path: '/catalogo'
-      fullPath: '/catalogo'
-      preLoaderRoute: typeof CatalogoRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/carrinho': {
@@ -198,12 +479,173 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CarrinhoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/catalogo': {
+      id: '/catalogo'
+      path: '/catalogo'
+      fullPath: '/catalogo'
+      preLoaderRoute: typeof CatalogoRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conta': {
+      id: '/conta'
+      path: '/conta'
+      fullPath: '/conta'
+      preLoaderRoute: typeof ContaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contactos': {
+      id: '/contactos'
+      path: '/contactos'
+      fullPath: '/contactos'
+      preLoaderRoute: typeof ContactosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/encomenda': {
+      id: '/encomenda'
+      path: '/encomenda'
+      fullPath: '/encomenda'
+      preLoaderRoute: typeof EncomendaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/entrar': {
+      id: '/entrar'
+      path: '/entrar'
+      fullPath: '/entrar'
+      preLoaderRoute: typeof EntrarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recuperar-password': {
+      id: '/recuperar-password'
+      path: '/recuperar-password'
+      fullPath: '/recuperar-password'
+      preLoaderRoute: typeof RecuperarPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registar': {
+      id: '/registar'
+      path: '/registar'
+      fullPath: '/registar'
+      preLoaderRoute: typeof RegistarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos': {
+      id: '/servicos'
+      path: '/servicos'
+      fullPath: '/servicos'
+      preLoaderRoute: typeof ServicosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/definicoes': {
+      id: '/admin/definicoes'
+      path: '/definicoes'
+      fullPath: '/admin/definicoes'
+      preLoaderRoute: typeof AdminDefinicoesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/importar': {
+      id: '/admin/importar'
+      path: '/importar'
+      fullPath: '/admin/importar'
+      preLoaderRoute: typeof AdminImportarRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/mensagens': {
+      id: '/admin/mensagens'
+      path: '/mensagens'
+      fullPath: '/admin/mensagens'
+      preLoaderRoute: typeof AdminMensagensRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/centralinas/$slug': {
+      id: '/centralinas/$slug'
+      path: '/centralinas/$slug'
+      fullPath: '/centralinas/$slug'
+      preLoaderRoute: typeof CentralinasSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conta/': {
+      id: '/conta/'
+      path: '/'
+      fullPath: '/conta/'
+      preLoaderRoute: typeof ContaIndexRouteImport
+      parentRoute: typeof ContaRoute
+    }
+    '/conta/password': {
+      id: '/conta/password'
+      path: '/password'
+      fullPath: '/conta/password'
+      preLoaderRoute: typeof ContaPasswordRouteImport
+      parentRoute: typeof ContaRoute
+    }
+    '/conta/perfil': {
+      id: '/conta/perfil'
+      path: '/perfil'
+      fullPath: '/conta/perfil'
+      preLoaderRoute: typeof ContaPerfilRouteImport
+      parentRoute: typeof ContaRoute
     }
     '/produto/$id': {
       id: '/produto/$id'
@@ -212,20 +654,125 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutoIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/encomendas/': {
+      id: '/admin/encomendas/'
+      path: '/encomendas'
+      fullPath: '/admin/encomendas/'
+      preLoaderRoute: typeof AdminEncomendasIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/encomendas/$id': {
+      id: '/admin/encomendas/$id'
+      path: '/encomendas/$id'
+      fullPath: '/admin/encomendas/$id'
+      preLoaderRoute: typeof AdminEncomendasIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/produtos/': {
+      id: '/admin/produtos/'
+      path: '/produtos'
+      fullPath: '/admin/produtos/'
+      preLoaderRoute: typeof AdminProdutosIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/produtos/$id': {
+      id: '/admin/produtos/$id'
+      path: '/produtos/$id'
+      fullPath: '/admin/produtos/$id'
+      preLoaderRoute: typeof AdminProdutosIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/api/emails/process': {
+      id: '/api/emails/process'
+      path: '/api/emails/process'
+      fullPath: '/api/emails/process'
+      preLoaderRoute: typeof ApiEmailsProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conta/encomendas/$code': {
+      id: '/conta/encomendas/$code'
+      path: '/encomendas/$code'
+      fullPath: '/conta/encomendas/$code'
+      preLoaderRoute: typeof ContaEncomendasCodeRouteImport
+      parentRoute: typeof ContaRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminDefinicoesRoute: typeof AdminDefinicoesRoute
+  AdminImportarRoute: typeof AdminImportarRoute
+  AdminMensagensRoute: typeof AdminMensagensRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminEncomendasIdRoute: typeof AdminEncomendasIdRoute
+  AdminProdutosIdRoute: typeof AdminProdutosIdRoute
+  AdminEncomendasIndexRoute: typeof AdminEncomendasIndexRoute
+  AdminProdutosIndexRoute: typeof AdminProdutosIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDefinicoesRoute: AdminDefinicoesRoute,
+  AdminImportarRoute: AdminImportarRoute,
+  AdminMensagensRoute: AdminMensagensRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminEncomendasIdRoute: AdminEncomendasIdRoute,
+  AdminProdutosIdRoute: AdminProdutosIdRoute,
+  AdminEncomendasIndexRoute: AdminEncomendasIndexRoute,
+  AdminProdutosIndexRoute: AdminProdutosIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface ContaRouteChildren {
+  ContaPasswordRoute: typeof ContaPasswordRoute
+  ContaPerfilRoute: typeof ContaPerfilRoute
+  ContaIndexRoute: typeof ContaIndexRoute
+  ContaEncomendasCodeRoute: typeof ContaEncomendasCodeRoute
+}
+
+const ContaRouteChildren: ContaRouteChildren = {
+  ContaPasswordRoute: ContaPasswordRoute,
+  ContaPerfilRoute: ContaPerfilRoute,
+  ContaIndexRoute: ContaIndexRoute,
+  ContaEncomendasCodeRoute: ContaEncomendasCodeRoute,
+}
+
+const ContaRouteWithChildren = ContaRoute._addFileChildren(ContaRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   CarrinhoRoute: CarrinhoRoute,
   CatalogoRoute: CatalogoRoute,
   CheckoutRoute: CheckoutRoute,
+  ContaRoute: ContaRouteWithChildren,
   ContactosRoute: ContactosRoute,
+  CookiesRoute: CookiesRoute,
   EncomendaRoute: EncomendaRoute,
+  EntrarRoute: EntrarRoute,
+  FaqRoute: FaqRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
+  RecuperarPasswordRoute: RecuperarPasswordRoute,
+  RegistarRoute: RegistarRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
   ServicosRoute: ServicosRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SobreRoute: SobreRoute,
+  TermosRoute: TermosRoute,
+  CentralinasSlugRoute: CentralinasSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
+  ApiEmailsProcessRoute: ApiEmailsProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

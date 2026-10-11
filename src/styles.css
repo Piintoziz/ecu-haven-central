@@ -113,6 +113,28 @@
     background-color: var(--color-primary);
     color: var(--color-primary-foreground);
   }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  input[type="search"]::-webkit-search-decoration {
+    display: none;
+  }
+}
+
+/* Acessibilidade: desativa animações CSS para quem prefere movimento reduzido.
+   (As animações Framer Motion respeitam <MotionConfig reducedMotion="user">.) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @utility container-page {
@@ -183,3 +205,198 @@
   position: relative;
 }
 
+
+/* ---------------------------------------------------------------------------
+   Loader "scanner" de centralina (components/site/ecu-scan-loader.tsx)
+   --------------------------------------------------------------------------- */
+:root {
+  --scan: oklch(0.63 0.25 27);
+}
+
+@keyframes ecu-scan-sweep {
+  0% {
+    transform: translateX(28px);
+  }
+  50% {
+    transform: translateX(292px);
+  }
+  100% {
+    transform: translateX(28px);
+  }
+}
+
+@keyframes ecu-scan-dots {
+  0%,
+  20% {
+    clip-path: inset(0 100% 0 0);
+  }
+  50% {
+    clip-path: inset(0 50% 0 0);
+  }
+  80%,
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.ecu-scan-window,
+.ecu-scan-beam {
+  animation: ecu-scan-sweep 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.ecu-scan-lit {
+  filter: drop-shadow(0 0 2px var(--scan)) drop-shadow(0 0 6px oklch(0.63 0.25 27 / 60%));
+}
+
+.ecu-scan-dots {
+  display: inline-block;
+  animation: ecu-scan-dots 1.2s steps(3, end) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ecu-scan-window,
+  .ecu-scan-beam {
+    animation-duration: 6s;
+  }
+  .ecu-scan-dots {
+    animation: none;
+  }
+}
+
+/* Animações de entrada lateral (framer-motion) não podem criar scroll horizontal
+   no telemóvel. "clip" (ao contrário de "hidden") não quebra o header sticky. */
+html,
+body {
+  overflow-x: clip;
+}
+
+/* Faixa de marcas (components/site/brand-marquee.tsx) */
+@keyframes brand-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.brand-marquee-track {
+  animation: brand-marquee 70s linear infinite;
+}
+
+.brand-marquee:hover .brand-marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-marquee-track {
+    animation-duration: 240s;
+  }
+}
+
+/* Texto das páginas legais (components/site/legal-page.tsx) */
+.legal-prose {
+  color: var(--muted-foreground);
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+.legal-prose section + section {
+  margin-top: 2.75rem;
+}
+.legal-prose h2 {
+  color: var(--foreground);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.9rem;
+}
+.legal-prose h3 {
+  color: var(--foreground);
+  font-weight: 700;
+  margin: 1.25rem 0 0.4rem;
+}
+.legal-prose p + p,
+.legal-prose p + ul,
+.legal-prose ul + p,
+.legal-prose p + .legal-table,
+.legal-prose .legal-table + p,
+.legal-prose p + .legal-dl {
+  margin-top: 0.85rem;
+}
+.legal-prose ul {
+  list-style: none;
+  padding: 0;
+}
+.legal-prose ul > li {
+  position: relative;
+  padding-left: 1.1rem;
+}
+.legal-prose ul > li + li {
+  margin-top: 0.35rem;
+}
+.legal-prose ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.75em;
+  width: 0.4rem;
+  height: 1px;
+  background: var(--primary);
+}
+.legal-prose strong {
+  color: var(--foreground);
+  font-weight: 700;
+}
+.legal-prose a {
+  color: var(--primary);
+  text-underline-offset: 3px;
+}
+.legal-prose a:hover {
+  text-decoration: underline;
+}
+.legal-table {
+  display: block;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  font-size: 0.85rem;
+}
+.legal-table table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+}
+.legal-table th,
+.legal-table td {
+  padding: 0.6rem 0.85rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+.legal-table th {
+  color: var(--foreground);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--surface);
+}
+.legal-table tr:last-child td {
+  border-bottom: 0;
+}
+.legal-dl {
+  display: grid;
+  grid-template-columns: minmax(0, 8rem) minmax(0, 1fr);
+  gap: 0.35rem 1rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  background: var(--surface);
+  font-size: 0.9rem;
+}
+.legal-dl dt {
+  color: var(--muted-foreground);
+}
+.legal-dl dd {
+  color: var(--foreground);
+  overflow-wrap: anywhere;
+}
