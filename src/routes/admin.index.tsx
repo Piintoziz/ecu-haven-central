@@ -13,7 +13,8 @@ import {
 } from "recharts";
 import { AdminPageHeader, EmptyRow, FilterTabs, Kpi, Panel, td, th } from "@/components/admin/ui";
 import { OrderStatusPill } from "@/components/site/order-status-pill";
-import { getDashboard, listOrders } from "@/lib/admin";
+import { getDashboard, listOrders, listPickups } from "@/lib/admin";
+import { WAREHOUSE } from "@/lib/content";
 import { formatPrice } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/")({
@@ -40,6 +41,7 @@ function Dashboard() {
     queryKey: ["admin", "dashboard", days],
     queryFn: () => getDashboard(days),
   });
+  const pickups = useQuery({ queryKey: ["admin", "pickups"], queryFn: listPickups });
   const recent = useQuery({
     queryKey: ["admin", "orders", "recent"],
     queryFn: () => listOrders({ page: 1 }),
@@ -88,6 +90,29 @@ function Dashboard() {
           to="/admin/mensagens"
         />
       </div>
+
+      {(pickups.data?.length ?? 0) > 0 && (
+        <Panel title={`Recolha Packlink · hoje às ${WAREHOUSE.pickup_time}`} className="mt-3">
+          <ul className="divide-y divide-border text-sm">
+            {pickups.data!.map((p) => {
+              const unpaid = p.packlink_state === "AWAITING_COMPLETION" || p.packlink_state === "READY_TO_PURCHASE";
+              return (
+                <li key={p.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+                  <Link to="/admin/encomendas/$id" params={{ id: p.id }} className="font-mono font-bold hover:text-primary">
+                    {p.order_code}
+                  </Link>
+                  <span className="text-muted-foreground">
+                    {p.shipping_rate?.carrier ?? "Packlink"} · {p.shipping_address.city}, {p.shipping_address.country_code}
+                  </span>
+                  <span className={unpaid ? "text-xs font-bold text-warning" : "text-xs font-semibold text-success"}>
+                    {unpaid ? "Por pagar na Packlink" : "Etiqueta pronta · colar na caixa"}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </Panel>
+      )}
 
       <div className="mt-3 grid gap-3 lg:grid-cols-[1fr_320px]">
         <Panel title="Faturação diária">

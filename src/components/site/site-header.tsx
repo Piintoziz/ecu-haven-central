@@ -9,13 +9,12 @@ import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "./language-switcher";
 import { LogoFull } from "./logo";
-import { SearchBar } from "./search-bar";
 
 const NAV = [
   { to: "/catalogo", key: "catalog" },
   { to: "/servicos", key: "services" },
   { to: "/encomenda", key: "track" },
-  { to: "/sobre", key: "about" },
+  { to: "/empresa", key: "about" },
   { to: "/contactos", key: "contact" },
 ] as const;
 
@@ -42,7 +41,7 @@ export function SiteHeader() {
 
       <div className="container-page flex h-16 items-center gap-3 md:gap-6">
         <Link to="/" className="flex shrink-0 items-center" aria-label={l.homeAria}>
-          <LogoFull priority className="h-10 sm:h-12" />
+          <LogoFull priority className="h-6 sm:h-8" />
         </Link>
 
         <nav aria-label={t.layout.nav.aria} className="hidden xl:flex items-center gap-5 whitespace-nowrap text-sm font-semibold">
@@ -58,11 +57,7 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="ml-auto hidden md:block w-full min-w-0 max-w-sm xl:max-w-xs 2xl:max-w-sm">
-          {pathname !== "/" && <SearchBar />}
-        </div>
-
-        <div className="ml-auto md:ml-0 flex shrink-0 items-center gap-1.5">
+        <div className="ml-auto flex shrink-0 items-center gap-1.5">
           <LanguageSwitcher className="hidden sm:inline-flex" />
           <Link
             to={auth.user ? "/conta" : "/entrar"}
@@ -112,7 +107,6 @@ export function SiteHeader() {
         className={cn("xl:hidden max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-border bg-surface", open ? "block" : "hidden")}
       >
         <div className="container-page flex flex-col gap-1 py-4">
-          <SearchBar className="mb-3" />
           {NAV.map((item) => (
             <Link
               key={item.to}

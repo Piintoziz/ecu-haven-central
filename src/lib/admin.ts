@@ -83,8 +83,8 @@ export async function listOrders(opts: { status?: OrderStatus; q?: string; page?
   if (q) {
     query =
       /^ct-?/i.test(q) || /^[2-9A-HJ-NP-Z-]{5,}$/.test(q)
-        ? query.ilike("order_code", `%${q.toUpperCase()}%`)
-        : query.ilike("email", `%${q.toLowerCase()}%`);
+        ? query.ilike("order_code", `%${filterSafe(q).toUpperCase()}%`)
+        : query.ilike("email", `%${filterSafe(q).toLowerCase()}%`);
   }
   const { data, error, count } = await query;
   if (error) fail("orders", error.message);
@@ -143,6 +143,9 @@ export type AdminOrder = {
   created_at: string;
   updated_at: string;
   shipping_rate: { carrier: string } | null;
+  packlink_reference: string | null;
+  packlink_state: string | null;
+  packlink_collection_date: string | null;
   order_items: {
     id: string;
     product_id: string | null;
@@ -151,7 +154,7 @@ export type AdminOrder = {
     condition_snapshot: ProductCondition;
     unit_price_cents: number;
     quantity: number;
-    product: { slug: string; stock_quantity: number } | null;
+    product: { slug: string; stock_quantity: number; weight_grams: number } | null;
   }[];
   shipments: AdminShipment[];
 };
@@ -162,7 +165,7 @@ export async function getOrder(id: string): Promise<AdminOrder | null> {
     .select(
       `*, shipping_rate:shipping_rates(carrier),
        order_items(id, product_id, title_snapshot, reference_snapshot, condition_snapshot, unit_price_cents, quantity,
-                   product:products(slug, stock_quantity)),
+                   product:products(slug, stock_quantity, weight_grams)),
        shipments(*, shipment_events(id, status, description, location, occurred_at))`,
     )
     .eq("id", id)
@@ -244,7 +247,16 @@ export type AdminProductRow = {
   product_brands: { brand: { name: string } | null }[];
 };
 
-async function productIdsMatching(q: string): Promise<string[]> {
+/**
+ * Texto de pesquisa seguro para filtros PostgREST (.or/.ilike): remove os caracteres
+ * com significado na sintaxe do filtro (, ( ) : " \) e os curingas do LIKE (% _ *).
+ */
+function filterSafe(q: string): string {
+  return q.replace(/[,()[\]:"\\%_*]/g, " ").replace(/\s+/g, " ").trim().slice(0, 64);
+}
+
+async function productIdsMatching(rawQ: string): Promise<string[]> {
+  const q = filterSafe(rawQ);
   const norm = normalizeReference(q);
   const ids = new Set<string>();
   const [refs, titles] = await Promise.all([
@@ -718,4 +730,33 @@ export async function updateSettings(s: StoreSettings) {
   // RLS sem permissão devolve 0 linhas em vez de erro.
   if (results.some((r) => !r.data?.length))
     throw new Error("Só administradores podem alterar as definições.");
+}
+
+// --- Expedição Packlink ------------------------------------------------------
+
+export type PickupRow = {
+  id: string;
+  order_code: string;
+  packlink_reference: string;
+  packlink_state: string | null;
+  packlink_collection_date: string | null;
+  shipping_address: AdminAddress;
+  shipping_rate: { carrier: string } | null;
+};
+
+/** Envios Packlink com recolha marcada até hoje e ainda não recolhidos, mais rascunhos por pagar. */
+export async function listPickups(): Promise<PickupRow[]> {
+  const today = new Date().toISOString().slice(0, 10);
+  const { data, error } = await sb()
+    .from("orders")
+    .select(
+      "id, order_code, packlink_reference, packlink_state, packlink_collection_date, shipping_address, shipping_rate:shipping_rates(carrier)",
+    )
+    .not("packlink_reference", "is", null)
+    .in("packlink_state", ["AWAITING_COMPLETION", "READY_TO_PURCHASE", "READY_TO_PRINT", "READY_FOR_COLLECTION"])
+    .or(`packlink_collection_date.lte.${today},packlink_collection_date.is.null,packlink_state.in.(AWAITING_COMPLETION,READY_TO_PURCHASE)`)
+    .order("packlink_collection_date", { ascending: true, nullsFirst: true })
+    .limit(50);
+  if (error) fail("pickups", error.message);
+  return (data ?? []) as unknown as PickupRow[];
 }

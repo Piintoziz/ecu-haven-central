@@ -2,11 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Loader2, Lock } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
-import { useForm, type Path, type UseFormRegister } from "react-hook-form";
+import { Controller, useForm, type Path, type UseFormRegister } from "react-hook-form";
 import { AdaptationNotice, hasAdaptationAck } from "@/components/site/adaptation-notice";
 import { CheckoutSteps } from "@/components/site/checkout-steps";
 import { FieldWrap, Honeypot, SelectInput, TextArea, TextInput } from "@/components/site/form-field";
 import { OrderComplete, type CompletedOrder } from "@/components/site/order-complete";
+import { PhoneInput } from "@/components/site/phone-input";
 import { Turnstile } from "@/components/site/turnstile";
 import { Button } from "@/components/ui/button";
 import { getAuthClient, useAuth } from "@/lib/auth";
@@ -67,7 +68,8 @@ const emptyAddress: Address = {
   postal_code: "",
   city: "",
   region: "",
-  country_code: "PT",
+  // Sem país por omissão: os portes só são calculados depois de o cliente indicar a morada.
+  country_code: "",
 };
 
 function CheckoutPage() {
@@ -93,6 +95,7 @@ function CheckoutPage() {
     watch,
     setValue,
     setError,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     defaultValues: {
@@ -135,6 +138,8 @@ function CheckoutPage() {
   }, [userId, setValue]);
 
   const country = watch("shipping_address.country_code");
+  const postalCode = watch("shipping_address.postal_code");
+  const hasDestination = !!country && (postalCode ?? "").trim().length >= 3;
   const sameBilling = watch("billing_same_as_shipping");
   const rateId = watch("shipping_rate_id");
 
@@ -146,7 +151,7 @@ function CheckoutPage() {
   const shipping = useQuery({
     queryKey: ["shipping", country, items],
     queryFn: () => getShippingOptions(country, items),
-    enabled: cart.ready && items.length > 0 && !!country,
+    enabled: cart.ready && items.length > 0 && hasDestination,
   });
 
   // Seleciona automaticamente a opção mais barata quando o destino muda
@@ -159,7 +164,7 @@ function CheckoutPage() {
     }
   }, [shipping.data, rateId, setValue]);
 
-  const selectedRate = shipping.data?.find((o) => o.id === rateId);
+  const selectedRate = hasDestination ? shipping.data?.find((o) => o.id === rateId) : undefined;
   const totalCents = cart.subtotalCents + (selectedRate?.price_cents ?? 0);
 
   async function onSubmit(values: FormValues) {
@@ -271,13 +276,26 @@ function CheckoutPage() {
           <Step n={1} title={c.contact}>
             <div className="grid gap-4 sm:grid-cols-2">
               <FieldWrap id="email" label={c.email} error={err("email")} hint={c.emailHint}>
-                <TextInput id="email" type="email" autoComplete="email" invalid={!!err("email")} {...register("email")} />
+                <TextInput id="email" type="email" autoComplete="email" maxLength={254} invalid={!!err("email")} {...register("email")} />
               </FieldWrap>
               <FieldWrap id="phone" label={c.phone} error={err("phone")} hint={c.phoneHint}>
-                <TextInput id="phone" type="tel" autoComplete="tel" invalid={!!err("phone")} {...register("phone")} />
+                <Controller
+                  control={control}
+                  name="phone"
+                  render={({ field }) => (
+                    <PhoneInput
+                      id="phone"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      defaultCountry={country || "PT"}
+                      invalid={!!err("phone")}
+                    />
+                  )}
+                />
               </FieldWrap>
               <FieldWrap id="vat_number" label={c.vat} optional error={err("vat_number")} hint={c.vatHint}>
-                <TextInput id="vat_number" autoComplete="off" invalid={!!err("vat_number")} {...register("vat_number")} />
+                <TextInput id="vat_number" autoComplete="off" maxLength={32} invalid={!!err("vat_number")} {...register("vat_number")} />
               </FieldWrap>
             </div>
           </Step>
@@ -297,7 +315,11 @@ function CheckoutPage() {
           </Step>
 
           <Step n={3} title={c.shipping}>
-            {shipping.isLoading ? (
+            {!hasDestination ? (
+              <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
+                {c.needAddress}
+              </p>
+            ) : shipping.isLoading ? (
               <div className="skeleton h-24 rounded-lg" />
             ) : shipping.data && shipping.data.length > 0 ? (
               <fieldset className="space-y-2">
@@ -355,7 +377,7 @@ function CheckoutPage() {
               ))}
             </fieldset>
             <FieldWrap id="notes" label={c.notes} optional className="mt-5" error={err("notes")}>
-              <TextArea id="notes" rows={3} placeholder={c.notesPlaceholder} {...register("notes")} />
+              <TextArea id="notes" rows={3} maxLength={1000} placeholder={c.notesPlaceholder} {...register("notes")} />
             </FieldWrap>
           </Step>
         </div>
@@ -460,28 +482,31 @@ function AddressFields({
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <FieldWrap id={id("full_name")} label={a.full_name} error={e("full_name")}>
-        <TextInput id={id("full_name")} autoComplete={`${auto} name`} invalid={!!e("full_name")} {...register(`${prefix}.full_name`)} />
+        <TextInput id={id("full_name")} autoComplete={`${auto} name`} maxLength={120} invalid={!!e("full_name")} {...register(`${prefix}.full_name`)} />
       </FieldWrap>
       <FieldWrap id={id("company_name")} label={a.company_name} optional error={e("company_name")}>
-        <TextInput id={id("company_name")} autoComplete={`${auto} organization`} {...register(`${prefix}.company_name`)} />
+        <TextInput id={id("company_name")} autoComplete={`${auto} organization`} maxLength={160} {...register(`${prefix}.company_name`)} />
       </FieldWrap>
       <FieldWrap id={id("line1")} label={a.line1} className="sm:col-span-2" error={e("line1")}>
-        <TextInput id={id("line1")} autoComplete={`${auto} address-line1`} invalid={!!e("line1")} {...register(`${prefix}.line1`)} />
+        <TextInput id={id("line1")} autoComplete={`${auto} address-line1`} maxLength={200} invalid={!!e("line1")} {...register(`${prefix}.line1`)} />
       </FieldWrap>
       <FieldWrap id={id("line2")} label={a.line2} optional className="sm:col-span-2">
-        <TextInput id={id("line2")} autoComplete={`${auto} address-line2`} {...register(`${prefix}.line2`)} />
+        <TextInput id={id("line2")} autoComplete={`${auto} address-line2`} maxLength={200} {...register(`${prefix}.line2`)} />
       </FieldWrap>
       <FieldWrap id={id("postal_code")} label={a.postal_code} error={e("postal_code")}>
-        <TextInput id={id("postal_code")} autoComplete={`${auto} postal-code`} invalid={!!e("postal_code")} {...register(`${prefix}.postal_code`)} />
+        <TextInput id={id("postal_code")} autoComplete={`${auto} postal-code`} maxLength={10} invalid={!!e("postal_code")} {...register(`${prefix}.postal_code`)} />
       </FieldWrap>
       <FieldWrap id={id("city")} label={a.city} error={e("city")}>
-        <TextInput id={id("city")} autoComplete={`${auto} address-level2`} invalid={!!e("city")} {...register(`${prefix}.city`)} />
+        <TextInput id={id("city")} autoComplete={`${auto} address-level2`} maxLength={100} invalid={!!e("city")} {...register(`${prefix}.city`)} />
       </FieldWrap>
       <FieldWrap id={id("region")} label={a.region} optional>
-        <TextInput id={id("region")} autoComplete={`${auto} address-level1`} {...register(`${prefix}.region`)} />
+        <TextInput id={id("region")} autoComplete={`${auto} address-level1`} maxLength={100} {...register(`${prefix}.region`)} />
       </FieldWrap>
       <FieldWrap id={id("country_code")} label={a.country} error={e("country_code")}>
         <SelectInput id={id("country_code")} autoComplete={`${auto} country`} {...register(`${prefix}.country_code`)}>
+          <option value="" disabled>
+            {a.chooseCountry}
+          </option>
           {COUNTRIES.map((c) => ({ code: c.code, name: t.common.country(c.code) }))
             .sort((x, y) => x.name.localeCompare(y.name, t.common.intl))
             .map((c) => (

@@ -16,11 +16,11 @@ import { headI18n, useT } from "@/lib/i18n";
 import { images } from "@/lib/images";
 import { pageHead } from "@/lib/seo";
 
-export const Route = createFileRoute("/sobre")({
+export const Route = createFileRoute("/empresa")({
   component: SobrePage,
   head: ({ match }) => {
     const { locale, t } = headI18n(match);
-    return pageHead({ title: t.pages.about.metaTitle, description: t.pages.about.metaDescription, path: "/sobre", locale });
+    return pageHead({ title: t.pages.about.metaTitle, description: t.pages.about.metaDescription, path: "/empresa", locale });
   },
 });
 

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { COUNTRY_CODES } from "./countries";
+import { isValidE164 } from "./phone";
 
 // Schemas partilhados: validados no browser (UX) e OBRIGATORIAMENTE no servidor.
 
@@ -19,16 +20,36 @@ export const phoneSchema = z
   .max(32)
   .regex(/^\+?[0-9 ()-]{6,}$/, "Telefone inválido");
 
-export const addressSchema = z.object({
-  full_name: required(120),
-  company_name: text(160).optional().default(""),
-  line1: required(200),
-  line2: text(200).optional().default(""),
-  postal_code: required(20),
-  city: required(100),
-  region: text(100).optional().default(""),
-  country_code: z.string().refine((c) => COUNTRY_CODES.includes(c), "País não suportado"),
-});
+/** Telefone com indicativo (E.164, ex.: +351912345678) e comprimento válido para o país. */
+export const phoneE164Schema = z
+  .string()
+  .trim()
+  .max(16)
+  .refine(isValidE164, "Telefone inválido para o país escolhido");
+
+// Listas brancas de caracteres: letras (com acentos), números e pontuação de moradas.
+// Não é a defesa contra SQL injection (as consultas são parametrizadas), mas
+// impede lixo, HTML e caracteres de controlo de chegarem a etiquetas e emails.
+const NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M} .'’-]*$/u;
+const ADDRESS_RE = /^[\p{L}\p{M}\p{N} .,'’ºª°#/()&+-]*$/u;
+const POSTAL_RE = /^[A-Za-z0-9][A-Za-z0-9 -]{1,9}$/;
+const PT_POSTAL_RE = /^\d{4}-\d{3}$/;
+
+export const addressSchema = z
+  .object({
+    full_name: required(120).regex(NAME_RE, "Use apenas letras no nome").refine((v) => v.includes(" "), "Indique nome e apelido"),
+    company_name: text(160).regex(ADDRESS_RE, "Caracteres inválidos").optional().default(""),
+    line1: required(200).min(5, "Morada demasiado curta").regex(ADDRESS_RE, "Caracteres inválidos"),
+    line2: text(200).regex(ADDRESS_RE, "Caracteres inválidos").optional().default(""),
+    postal_code: required(10).regex(POSTAL_RE, "Código postal inválido"),
+    city: required(100).regex(ADDRESS_RE, "Caracteres inválidos"),
+    region: text(100).regex(ADDRESS_RE, "Caracteres inválidos").optional().default(""),
+    country_code: z.string().refine((c) => COUNTRY_CODES.includes(c), "Escolha o país"),
+  })
+  .superRefine((a, ctx) => {
+    if (a.country_code === "PT" && !PT_POSTAL_RE.test(a.postal_code))
+      ctx.addIssue({ code: "custom", path: ["postal_code"], message: "Código postal inválido (formato 0000-000)" });
+  });
 
 const localeSchema = z.enum(["pt", "en"]).optional().default("pt");
 
@@ -47,7 +68,7 @@ export const orderInputSchema = z
         message: "Artigos duplicados",
       }),
     email: emailSchema,
-    phone: phoneSchema,
+    phone: phoneE164Schema,
     vat_number: text(32)
       .regex(/^[A-Za-z0-9 .-]*$/, "NIF/VAT inválido")
       .optional()
@@ -87,7 +108,7 @@ export const contactInputSchema = z.object({
   name: required(120),
   company: text(160).optional().default(""),
   email: emailSchema,
-  phone: z.union([phoneSchema, z.literal("")]).optional().default(""),
+  phone: z.union([phoneE164Schema, z.literal("")]).optional().default(""),
   product_reference: text(64)
     .regex(/^[A-Za-z0-9 .\-/]*$/, "Referência inválida")
     .optional()

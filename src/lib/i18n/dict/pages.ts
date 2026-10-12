@@ -3,7 +3,8 @@ import { ns } from "../ns";
 export const pages = ns({
   pt: {
     home: {
-      metaTitle: "Centralinas — Centralinas e módulos eletrónicos automóveis por referência",
+      // Mantém o título que o domínio tem há anos no Google (site antigo)
+      metaTitle: "Centralinas | O Maior Stock de Centralinas da Europa",
       metaDescription:
         "Centralinas de motor, ABS, airbag, TCU e BCM testadas em bancada. Pesquise pela referência de hardware (Bosch 0281…, Siemens, Delphi, Marelli) e receba em 24–72 h.",
       activeRefs: (n: string) => `${n} referências ativas no catálogo`,
@@ -79,7 +80,7 @@ export const pages = ns({
   },
   en: {
     home: {
-      metaTitle: "Centralinas — Automotive ECUs and electronic modules by reference",
+      metaTitle: "Centralinas | The Largest ECU Stock in Europe",
       metaDescription:
         "Bench-tested engine, ABS, airbag, TCU and BCM units. Search by hardware reference (Bosch 0281…, Siemens, Delphi, Marelli) and receive it in 24–72 h.",
       activeRefs: (n: string) => `${n} active references in the catalogue`,

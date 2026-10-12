@@ -83,6 +83,43 @@ const SECURITY_HEADERS: Record<string, string> = {
   "Cross-Origin-Opener-Policy": "same-origin",
 };
 
+// ---------------------------------------------------------------------------
+// Redireções 301 do site antigo (WordPress, 2006–2026) para manter o SEO do domínio.
+// ---------------------------------------------------------------------------
+const LEGACY_REDIRECTS: Record<string, string> = {
+  "/sobre": "/empresa",
+  "/empresa-centralinas": "/empresa",
+  "/servicos-centralinas": "/servicos",
+  "/contactos-centralinas": "/contactos",
+  "/index.php": "/",
+  "/hello-world": "/",
+  "/category/uncategorized": "/",
+  "/feed": "/",
+  "/comments/feed": "/",
+};
+
+/** Devolve o URL de destino se o pedido for de um endereço antigo, senão null. */
+function legacyRedirect(url: URL): string | null {
+  let path = url.pathname;
+  let changed = false;
+  // O WordPress usava barra final (/servicos/); o site novo não usa.
+  if (path.length > 1 && path.endsWith("/")) {
+    path = path.replace(/\/+$/, "") || "/";
+    changed = true;
+  }
+  const mapped = LEGACY_REDIRECTS[path.toLowerCase()];
+  if (mapped) {
+    path = mapped;
+    changed = true;
+  }
+  // /?p=39 era a página /centralinas/ do WordPress; outros ?p=N vão para o início
+  if (path === "/" && url.searchParams.has("p")) {
+    return `${url.origin}${url.searchParams.get("p") === "39" ? "/centralinas" : "/"}`;
+  }
+  if (!changed) return null;
+  return `${url.origin}${path}${mapped ? "" : url.search}`;
+}
+
 const isLocalHost = (host: string) => /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host);
 
 function withSecurityHeaders(response: Response): Response {
@@ -105,6 +142,16 @@ export default {
     if (import.meta.env.PROD && proto === "http" && !isLocalHost(url.host)) {
       url.protocol = "https:";
       return Response.redirect(url.toString(), 301);
+    }
+
+    // www.centralinas.com -> centralinas.com (domínio principal)
+    if (import.meta.env.PROD && url.hostname.startsWith("www.")) {
+      url.hostname = url.hostname.slice(4);
+      return Response.redirect(url.toString(), 301);
+    }
+    if (request.method === "GET" || request.method === "HEAD") {
+      const target = legacyRedirect(url);
+      if (target) return Response.redirect(target, 301);
     }
 
     try {

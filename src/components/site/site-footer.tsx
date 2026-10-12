@@ -50,6 +50,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link to="/centralinas" className="text-muted-foreground hover:text-foreground">
+                {f.refIndex}
+              </Link>
+            </li>
+            <li>
               <Link to="/contactos" className="text-muted-foreground hover:text-foreground">
                 {f.askRef}
               </Link>
@@ -60,7 +65,7 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link to="/sobre" className="text-muted-foreground hover:text-foreground">
+              <Link to="/empresa" className="text-muted-foreground hover:text-foreground">
                 {f.about}
               </Link>
             </li>

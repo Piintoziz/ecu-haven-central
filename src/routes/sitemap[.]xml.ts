@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getFacets } from "@/lib/catalog";
+import { getFacets, getSitemapProducts } from "@/lib/catalog";
 import { SITE_URL } from "@/lib/env";
-import { getPublicClient } from "@/lib/supabase";
 
 function xmlEscape(value: string): string {
   return value
@@ -27,17 +26,15 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const [{ data: products }, facets] = await Promise.all([
-          getPublicClient().rpc("sitemap_products"),
-          getFacets(),
-        ]);
+        const [products, facets] = await Promise.all([getSitemapProducts(), getFacets()]);
 
         const urls: string[] = [
           urlTag("/", undefined, "1.0"),
           urlTag("/catalogo", undefined, "0.9"),
+          urlTag("/centralinas", undefined, "0.9"),
           urlTag("/servicos", undefined, "0.6"),
           urlTag("/contactos", undefined, "0.5"),
-          urlTag("/sobre", undefined, "0.4"),
+          urlTag("/empresa", undefined, "0.4"),
           urlTag("/faq", undefined, "0.5"),
           urlTag("/termos", undefined, "0.2"),
           urlTag("/privacidade", undefined, "0.2"),
@@ -45,7 +42,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           ...facets.categories.filter((c) => c.count > 0).map((c) => urlTag(`/catalogo?categoria=${c.slug}`, undefined, "0.8")),
           ...facets.manufacturers.map((m) => urlTag(`/catalogo?fabricante=${m.slug}`, undefined, "0.7")),
           ...facets.brands.map((b) => urlTag(`/catalogo?marca=${b.slug}`, undefined, "0.7")),
-          ...((products ?? []) as { slug: string; updated_at: string }[]).map((p) =>
+          ...products.map((p) =>
             urlTag(`/centralinas/${p.slug}`, p.updated_at, "0.8"),
           ),
         ];

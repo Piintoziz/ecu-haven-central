@@ -2,9 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Check, Clock, Loader2, Mail, MapPin, Phone, Send } from "lucide-react";
 import { useCallback, useState, type ReactNode } from "react";
-import { useForm, type Path } from "react-hook-form";
+import { Controller, useForm, type Path } from "react-hook-form";
 import { z } from "zod";
 import { FieldWrap, Honeypot, TextArea, TextInput } from "@/components/site/form-field";
+import { PhoneInput } from "@/components/site/phone-input";
 import { Turnstile } from "@/components/site/turnstile";
 import { Button } from "@/components/ui/button";
 import { submitContact } from "@/lib/contact.functions";
@@ -50,6 +51,7 @@ function ContactosPage() {
     register,
     handleSubmit,
     setError,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     defaultValues: {
@@ -107,19 +109,25 @@ function ContactosPage() {
               <Honeypot {...register("website")} />
               <div className="grid gap-4 sm:grid-cols-2">
                 <FieldWrap id="name" label={c.name} error={msg(errors.name?.message)}>
-                  <TextInput id="name" autoComplete="name" invalid={!!errors.name} {...register("name")} />
+                  <TextInput id="name" autoComplete="name" maxLength={120} invalid={!!errors.name} {...register("name")} />
                 </FieldWrap>
                 <FieldWrap id="company" label={c.company} optional>
-                  <TextInput id="company" autoComplete="organization" {...register("company")} />
+                  <TextInput id="company" autoComplete="organization" maxLength={160} {...register("company")} />
                 </FieldWrap>
                 <FieldWrap id="email" label={c.email} error={msg(errors.email?.message)}>
-                  <TextInput id="email" type="email" autoComplete="email" invalid={!!errors.email} {...register("email")} />
+                  <TextInput id="email" type="email" autoComplete="email" maxLength={254} invalid={!!errors.email} {...register("email")} />
                 </FieldWrap>
                 <FieldWrap id="phone" label={c.phone} optional error={msg(errors.phone?.message)}>
-                  <TextInput id="phone" type="tel" autoComplete="tel" invalid={!!errors.phone} {...register("phone")} />
+                  <Controller
+                    control={control}
+                    name="phone"
+                    render={({ field }) => (
+                      <PhoneInput id="phone" value={field.value} onChange={field.onChange} onBlur={field.onBlur} invalid={!!errors.phone} />
+                    )}
+                  />
                 </FieldWrap>
                 <FieldWrap id="product_reference" label={c.ref} optional error={msg(errors.product_reference?.message)} hint={c.refHint}>
-                  <TextInput id="product_reference" className="font-mono" invalid={!!errors.product_reference} {...register("product_reference")} />
+                  <TextInput id="product_reference" className="font-mono" maxLength={64} invalid={!!errors.product_reference} {...register("product_reference")} />
                 </FieldWrap>
                 <FieldWrap id="vin" label={c.vin} optional error={msg(errors.vin?.message)}>
                   <TextInput id="vin" className="font-mono uppercase" maxLength={17} invalid={!!errors.vin} {...register("vin")} />
@@ -129,6 +137,7 @@ function ContactosPage() {
                 <TextArea
                   id="message"
                   rows={5}
+                  maxLength={5000}
                   placeholder={c.messagePlaceholder}
                   invalid={!!errors.message}
                   {...register("message")}

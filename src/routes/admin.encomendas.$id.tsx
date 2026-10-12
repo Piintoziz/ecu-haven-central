@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
+import { PacklinkPanel } from "@/components/admin/packlink-panel";
 import { AdminPageHeader, Panel } from "@/components/admin/ui";
 import { AddressBlock } from "@/components/site/address-block";
 import { FieldWrap, SelectInput, TextInput } from "@/components/site/form-field";
@@ -321,7 +322,7 @@ function ShipmentsPanel({ order, onChanged }: { order: AdminOrder; onChanged: ()
       actions={
         canShip && !adding ? (
           <Button size="sm" variant="outline" className="font-bold" onClick={() => setAdding(true)}>
-            <Plus /> Novo envio
+            <Plus /> Registar envio manual
           </Button>
         ) : undefined
       }
@@ -331,6 +332,7 @@ function ShipmentsPanel({ order, onChanged }: { order: AdminOrder; onChanged: ()
           Confirme o pagamento antes de expedir.
         </p>
       )}
+      <PacklinkPanel order={order} onChanged={onChanged} />
       {adding && (
         <NewShipmentForm
           order={order}

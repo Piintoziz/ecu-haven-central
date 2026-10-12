@@ -132,7 +132,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         telephone: COMPANY.phone,
         address: {
           "@type": "PostalAddress",
+          streetAddress: COMPANY.street,
+          postalCode: COMPANY.postalCode,
           addressLocality: COMPANY.locality,
+          addressRegion: COMPANY.region,
           addressCountry: "PT",
         },
         potentialAction: {

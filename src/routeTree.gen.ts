@@ -17,6 +17,7 @@ import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContaRouteImport } from './routes/conta'
 import { Route as ContactosRouteImport } from './routes/contactos'
 import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as EmpresaRouteImport } from './routes/empresa'
 import { Route as EncomendaRouteImport } from './routes/encomenda'
 import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -26,12 +27,12 @@ import { Route as RegistarRouteImport } from './routes/registar'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ServicosRouteImport } from './routes/servicos'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminDefinicoesRouteImport } from './routes/admin.definicoes'
 import { Route as AdminImportarRouteImport } from './routes/admin.importar'
 import { Route as AdminMensagensRouteImport } from './routes/admin.mensagens'
+import { Route as CentralinasIndexRouteImport } from './routes/centralinas.index'
 import { Route as CentralinasSlugRouteImport } from './routes/centralinas.$slug'
 import { Route as ContaIndexRouteImport } from './routes/conta.index'
 import { Route as ContaPasswordRouteImport } from './routes/conta.password'
@@ -84,6 +85,11 @@ const CookiesRoute = CookiesRouteImport.update({
   path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmpresaRoute = EmpresaRouteImport.update({
+  id: '/empresa',
+  path: '/empresa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EncomendaRoute = EncomendaRouteImport.update({
   id: '/encomenda',
   path: '/encomenda',
@@ -129,11 +135,6 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SobreRoute = SobreRouteImport.update({
-  id: '/sobre',
-  path: '/sobre',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
   path: '/termos',
@@ -158,6 +159,11 @@ const AdminMensagensRoute = AdminMensagensRouteImport.update({
   id: '/mensagens',
   path: '/mensagens',
   getParentRoute: () => AdminRoute,
+} as any)
+const CentralinasIndexRoute = CentralinasIndexRouteImport.update({
+  id: '/centralinas/',
+  path: '/centralinas/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CentralinasSlugRoute = CentralinasSlugRouteImport.update({
   id: '/centralinas/$slug',
@@ -224,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/conta': typeof ContaRouteWithChildren
   '/contactos': typeof ContactosRoute
   '/cookies': typeof CookiesRoute
+  '/empresa': typeof EmpresaRoute
   '/encomenda': typeof EncomendaRoute
   '/entrar': typeof EntrarRoute
   '/faq': typeof FaqRoute
@@ -233,7 +240,6 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/servicos': typeof ServicosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
   '/admin/definicoes': typeof AdminDefinicoesRoute
   '/admin/importar': typeof AdminImportarRoute
@@ -243,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/conta/perfil': typeof ContaPerfilRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/centralinas/': typeof CentralinasIndexRoute
   '/conta/': typeof ContaIndexRoute
   '/admin/encomendas/$id': typeof AdminEncomendasIdRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
@@ -258,6 +265,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/contactos': typeof ContactosRoute
   '/cookies': typeof CookiesRoute
+  '/empresa': typeof EmpresaRoute
   '/encomenda': typeof EncomendaRoute
   '/entrar': typeof EntrarRoute
   '/faq': typeof FaqRoute
@@ -267,7 +275,6 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/servicos': typeof ServicosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
   '/admin/definicoes': typeof AdminDefinicoesRoute
   '/admin/importar': typeof AdminImportarRoute
@@ -277,6 +284,7 @@ export interface FileRoutesByTo {
   '/conta/perfil': typeof ContaPerfilRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/admin': typeof AdminIndexRoute
+  '/centralinas': typeof CentralinasIndexRoute
   '/conta': typeof ContaIndexRoute
   '/admin/encomendas/$id': typeof AdminEncomendasIdRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
@@ -295,6 +303,7 @@ export interface FileRoutesById {
   '/conta': typeof ContaRouteWithChildren
   '/contactos': typeof ContactosRoute
   '/cookies': typeof CookiesRoute
+  '/empresa': typeof EmpresaRoute
   '/encomenda': typeof EncomendaRoute
   '/entrar': typeof EntrarRoute
   '/faq': typeof FaqRoute
@@ -304,7 +313,6 @@ export interface FileRoutesById {
   '/robots.txt': typeof RobotsDottxtRoute
   '/servicos': typeof ServicosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
   '/admin/definicoes': typeof AdminDefinicoesRoute
   '/admin/importar': typeof AdminImportarRoute
@@ -314,6 +322,7 @@ export interface FileRoutesById {
   '/conta/perfil': typeof ContaPerfilRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/centralinas/': typeof CentralinasIndexRoute
   '/conta/': typeof ContaIndexRoute
   '/admin/encomendas/$id': typeof AdminEncomendasIdRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
@@ -333,6 +342,7 @@ export interface FileRouteTypes {
     | '/conta'
     | '/contactos'
     | '/cookies'
+    | '/empresa'
     | '/encomenda'
     | '/entrar'
     | '/faq'
@@ -342,7 +352,6 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/servicos'
     | '/sitemap.xml'
-    | '/sobre'
     | '/termos'
     | '/admin/definicoes'
     | '/admin/importar'
@@ -352,6 +361,7 @@ export interface FileRouteTypes {
     | '/conta/perfil'
     | '/produto/$id'
     | '/admin/'
+    | '/centralinas/'
     | '/conta/'
     | '/admin/encomendas/$id'
     | '/admin/produtos/$id'
@@ -367,6 +377,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contactos'
     | '/cookies'
+    | '/empresa'
     | '/encomenda'
     | '/entrar'
     | '/faq'
@@ -376,7 +387,6 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/servicos'
     | '/sitemap.xml'
-    | '/sobre'
     | '/termos'
     | '/admin/definicoes'
     | '/admin/importar'
@@ -386,6 +396,7 @@ export interface FileRouteTypes {
     | '/conta/perfil'
     | '/produto/$id'
     | '/admin'
+    | '/centralinas'
     | '/conta'
     | '/admin/encomendas/$id'
     | '/admin/produtos/$id'
@@ -403,6 +414,7 @@ export interface FileRouteTypes {
     | '/conta'
     | '/contactos'
     | '/cookies'
+    | '/empresa'
     | '/encomenda'
     | '/entrar'
     | '/faq'
@@ -412,7 +424,6 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/servicos'
     | '/sitemap.xml'
-    | '/sobre'
     | '/termos'
     | '/admin/definicoes'
     | '/admin/importar'
@@ -422,6 +433,7 @@ export interface FileRouteTypes {
     | '/conta/perfil'
     | '/produto/$id'
     | '/admin/'
+    | '/centralinas/'
     | '/conta/'
     | '/admin/encomendas/$id'
     | '/admin/produtos/$id'
@@ -440,6 +452,7 @@ export interface RootRouteChildren {
   ContaRoute: typeof ContaRouteWithChildren
   ContactosRoute: typeof ContactosRoute
   CookiesRoute: typeof CookiesRoute
+  EmpresaRoute: typeof EmpresaRoute
   EncomendaRoute: typeof EncomendaRoute
   EntrarRoute: typeof EntrarRoute
   FaqRoute: typeof FaqRoute
@@ -449,10 +462,10 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   ServicosRoute: typeof ServicosRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  SobreRoute: typeof SobreRoute
   TermosRoute: typeof TermosRoute
   CentralinasSlugRoute: typeof CentralinasSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
+  CentralinasIndexRoute: typeof CentralinasIndexRoute
   ApiEmailsProcessRoute: typeof ApiEmailsProcessRoute
 }
 
@@ -512,6 +525,13 @@ declare module '@tanstack/react-router' {
       path: '/cookies'
       fullPath: '/cookies'
       preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/empresa': {
+      id: '/empresa'
+      path: '/empresa'
+      fullPath: '/empresa'
+      preLoaderRoute: typeof EmpresaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/encomenda': {
@@ -577,13 +597,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sobre': {
-      id: '/sobre'
-      path: '/sobre'
-      fullPath: '/sobre'
-      preLoaderRoute: typeof SobreRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/termos': {
       id: '/termos'
       path: '/termos'
@@ -618,6 +631,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/mensagens'
       preLoaderRoute: typeof AdminMensagensRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/centralinas/': {
+      id: '/centralinas/'
+      path: '/centralinas'
+      fullPath: '/centralinas/'
+      preLoaderRoute: typeof CentralinasIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/centralinas/$slug': {
       id: '/centralinas/$slug'
@@ -748,6 +768,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContaRoute: ContaRouteWithChildren,
   ContactosRoute: ContactosRoute,
   CookiesRoute: CookiesRoute,
+  EmpresaRoute: EmpresaRoute,
   EncomendaRoute: EncomendaRoute,
   EntrarRoute: EntrarRoute,
   FaqRoute: FaqRoute,
@@ -757,10 +778,10 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   ServicosRoute: ServicosRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  SobreRoute: SobreRoute,
   TermosRoute: TermosRoute,
   CentralinasSlugRoute: CentralinasSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
+  CentralinasIndexRoute: CentralinasIndexRoute,
   ApiEmailsProcessRoute: ApiEmailsProcessRoute,
 }
 export const routeTree = rootRouteImport

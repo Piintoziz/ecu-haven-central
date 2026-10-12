@@ -3,12 +3,17 @@
 // Valores entre [ ] são marcadores por preencher com os dados reais da empresa.
 
 export const COMPANY = {
-  phone: "+351 220 000 000",
-  phoneHref: "tel:+351220000000",
-  email: "geral@centralinas.pt",
-  address: "Zona Industrial Norte, Porto, Portugal",
-  locality: "Porto",
-  hours: "Seg–Sex 09h–19h · Sáb 09h–13h",
+  phone: "+351 931 604 415",
+  phoneHref: "tel:+351931604415",
+  phone2: "+351 967 327 878",
+  phone2Href: "tel:+351967327878",
+  email: "centralinas@hotmail.com",
+  address: "R. Álvaro Ferreira Alves, Armazém 50B, 2855-591 Corroios, Portugal",
+  street: "R. Álvaro Ferreira Alves, Armazém 50B",
+  postalCode: "2855-591",
+  locality: "Corroios",
+  region: "Setúbal",
+  hours: "Seg–Sex 09h–18h · Sáb 09h–13h",
 } as const;
 
 /** Identificação legal do prestador (DL 7/2004, art. 10.º — comércio eletrónico). */
@@ -19,7 +24,7 @@ export const LEGAL = {
   registry: "[Conservatória do Registo Comercial de …]",
   shareCapital: "[Capital social] €",
   /** Contacto para pedidos RGPD (pode ser o email geral). */
-  privacyEmail: "geral@centralinas.pt",
+  privacyEmail: "centralinas@hotmail.com",
   /** Data da última revisão das páginas legais (AAAA-MM-DD). */
   lastUpdated: "2026-10-10",
 } as const;
@@ -196,3 +201,20 @@ export function servicesFor(locale: "pt" | "en"): typeof SERVICES {
   if (locale === "pt") return SERVICES;
   return SERVICES.map((s) => ({ ...s, ...SERVICES_EN[s.id] }));
 }
+
+/** Armazém de expedição (remetente nos envios e morada de recolha das transportadoras). */
+export const WAREHOUSE = {
+  company: "Centralinas",
+  contact_name: "Centralinas Expedição",
+  street: "R. Álvaro Ferreira Alves, 50B",
+  postal_code: "2855-591",
+  city: "Corroios",
+  country_code: "PT",
+  // Usa o telefone e email da empresa; o telefone tem de ser real (a transportadora liga se houver problema na recolha).
+  phone: COMPANY.phone,
+  email: COMPANY.email,
+  /** Hora preferida de recolha (janela da manhã das transportadoras: 09h–14h). */
+  pickup_time: "10:30",
+  /** Caixa e peso por omissão de uma centralina embalada. */
+  default_parcel: { weight_g: 1500, length_cm: 30, width_cm: 22, height_cm: 12 },
+} as const;

@@ -1,6 +1,14 @@
 // Mensagens geradas em português (validação zod, servidor, Supabase Auth) e a
 // respetiva tradução inglesa, aplicada no momento de mostrar (t.common.msg).
 export const MESSAGES_EN: Record<string, string> = {
+  "Telefone inválido para o país escolhido": "Invalid phone number for the selected country",
+  "Use apenas letras no nome": "Please use letters only in the name",
+  "Indique nome e apelido": "Please enter your first and last name",
+  "Caracteres inválidos": "Invalid characters",
+  "Morada demasiado curta": "Address too short",
+  "Código postal inválido": "Invalid postcode",
+  "Código postal inválido (formato 0000-000)": "Invalid postcode (format 0000-000)",
+  "Escolha o país": "Please choose a country",
   "A nova palavra-passe tem de ser diferente da anterior.": "The new password must be different from the current one.",
   "A verificação anti-spam falhou. Tente novamente.": "The anti-spam check failed. Please try again.",
   "Artigos duplicados": "Duplicate items",

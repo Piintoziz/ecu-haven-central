@@ -84,3 +84,27 @@ export async function getCartProducts(ids: string[]): Promise<LiveCartProduct[]>
   if (error) fail("cart", error.message);
   return (data ?? []) as LiveCartProduct[];
 }
+
+/** Lê todas as linhas de uma RPC sem argumentos (o PostgREST devolve no máximo 1000 por pedido). */
+async function rpcAll<T>(fn: string): Promise<T[]> {
+  const out: T[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await getPublicClient().rpc(fn).range(from, from + 999);
+    if (error) fail(fn, error.message);
+    const rows = (data ?? []) as T[];
+    out.push(...rows);
+    if (rows.length < 1000) break;
+  }
+  return out;
+}
+
+export type LegacyReference = { ref: string; slug: string | null };
+
+/** Índice de referências do site antigo (/centralinas): ~13 mil, com slug quando há peça ativa. */
+export function getLegacyReferenceIndex(): Promise<LegacyReference[]> {
+  return rpcAll<LegacyReference>("legacy_reference_index");
+}
+
+export function getSitemapProducts(): Promise<{ slug: string; updated_at: string }[]> {
+  return rpcAll("sitemap_products");
+}

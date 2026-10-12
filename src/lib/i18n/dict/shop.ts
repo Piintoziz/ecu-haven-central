@@ -67,6 +67,7 @@ export const shop = ns({
       billing: "Morada de faturação",
       shipping: "Envio",
       shippingMethod: "Método de envio",
+      needAddress: "Indique o país e o código postal da morada de entrega para calcular os portes.",
       noRate: "Ainda não temos tarifa automática para este destino.",
       askQuote: "Peça um orçamento de envio",
       payment: "Pagamento",
@@ -100,6 +101,7 @@ export const shop = ns({
         city: "Localidade",
         region: "Região / distrito",
         country: "País",
+        chooseCountry: "Escolha o país…",
       },
     },
     product: {
@@ -252,6 +254,7 @@ export const shop = ns({
       billing: "Billing address",
       shipping: "Shipping",
       shippingMethod: "Shipping method",
+      needAddress: "Enter the country and postcode of the delivery address to calculate shipping.",
       noRate: "We don't have an automatic rate for this destination yet.",
       askQuote: "Ask for a shipping quote",
       payment: "Payment",
@@ -285,6 +288,7 @@ export const shop = ns({
         city: "City",
         region: "Region / state",
         country: "Country",
+        chooseCountry: "Choose a country…",
       },
     },
     product: {

@@ -22,7 +22,7 @@ export const layout = ns({
     openMenu: "Abrir menu",
     closeMenu: "Fechar menu",
     language: "Idioma",
-    hours: "Seg–Sex 09h–19h · Sáb 09h–13h",
+    hours: "Seg–Sex 09h–18h · Sáb 09h–13h",
     search: {
       aria: "Pesquisar por referência, família ou modelo",
       placeholderLg: "Referência de hardware, software ou OEM — ex.: 0281016000",
@@ -48,6 +48,7 @@ export const layout = ns({
       track: "Seguir encomenda",
       repair: "Reparação e programação",
       askRef: "Pedir uma referência",
+      refIndex: "Índice de referências",
       faq: "Perguntas frequentes",
       about: "Empresa",
       contact: "Contactos",
@@ -136,7 +137,7 @@ export const layout = ns({
     openMenu: "Open menu",
     closeMenu: "Close menu",
     language: "Language",
-    hours: "Mon–Fri 9am–7pm · Sat 9am–1pm (WET)",
+    hours: "Mon–Fri 9am–6pm · Sat 9am–1pm (WET)",
     search: {
       aria: "Search by reference, family or model",
       placeholderLg: "Hardware, software or OEM reference — e.g. 0281016000",
@@ -161,6 +162,7 @@ export const layout = ns({
       track: "Track order",
       repair: "Repair & programming",
       askRef: "Request a reference",
+      refIndex: "Reference index",
       faq: "FAQ",
       about: "Company",
       contact: "Contact",

@@ -132,6 +132,43 @@ function HomePage() {
         </div>
       </section>
 
+      {/* ---------- Entradas recentes ---------- */}
+      <section className="border-y border-border bg-surface/30">
+        <div className="container-page py-16">
+          <Reveal className="mb-6 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-extrabold md:text-3xl">{h.recent}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {h.recentSub}
+              </p>
+            </div>
+            <Link to="/catalogo" search={{ ordem: "newest" }} className="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:gap-2.5 transition-all">
+              {h.seeAll} <ArrowRight className="size-4" />
+            </Link>
+          </Reveal>
+          {latest.items.length > 0 ? (
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {latest.items.map((p, i) => (
+                <motion.li
+                  key={p.id}
+                  initial={{ opacity: 0, y: 14 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.35, delay: (i % 4) * 0.06 }}
+                  className="flex"
+                >
+                  <ProductCard product={p} className="w-full" />
+                </motion.li>
+              ))}
+            </ul>
+          ) : (
+            <p className="rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">
+              {h.loadingCatalog}
+            </p>
+          )}
+        </div>
+      </section>
+
       {/* ---------- Sistemas ---------- */}
       <section className="container-page py-16">
         <Reveal className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -168,43 +205,6 @@ function HomePage() {
             ))}
           </ul>
         </Reveal>
-      </section>
-
-      {/* ---------- Entradas recentes ---------- */}
-      <section className="border-y border-border bg-surface/30">
-        <div className="container-page py-16">
-          <Reveal className="mb-6 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-extrabold md:text-3xl">{h.recent}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {h.recentSub}
-              </p>
-            </div>
-            <Link to="/catalogo" search={{ ordem: "newest" }} className="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:gap-2.5 transition-all">
-              {h.seeAll} <ArrowRight className="size-4" />
-            </Link>
-          </Reveal>
-          {latest.items.length > 0 ? (
-            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {latest.items.map((p, i) => (
-                <motion.li
-                  key={p.id}
-                  initial={{ opacity: 0, y: 14 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.35, delay: (i % 4) * 0.06 }}
-                  className="flex"
-                >
-                  <ProductCard product={p} className="w-full" />
-                </motion.li>
-              ))}
-            </ul>
-          ) : (
-            <p className="rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">
-              {h.loadingCatalog}
-            </p>
-          )}
-        </div>
       </section>
 
       {/* ---------- Marcas com que trabalhamos ---------- */}
