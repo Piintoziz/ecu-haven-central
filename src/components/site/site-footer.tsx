@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { COMPANY, COMPLAINTS_BOOK_URL, LEGAL, RAL_ENTITIES } from "@/lib/content";
 import { CookieSettingsButton } from "./cookie-consent";
-import { LogoFull } from "./logo";
 import { useT } from "@/lib/i18n";
 
 const CATEGORIES = ["motor", "abs", "airbag", "transmissao", "conforto", "imobilizador"];
@@ -13,7 +12,16 @@ export function SiteFooter() {
     <footer className="mt-24 border-t border-border bg-surface">
       <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
         <div className="space-y-4">
-          <LogoFull className="h-14" />
+          <img
+            src="/images/logo-centralinas-chip.png"
+            alt="Centralinas.com"
+            width={520}
+            height={210}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+            className="h-24 w-auto select-none"
+          />
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
             {f.tagline}
           </p>

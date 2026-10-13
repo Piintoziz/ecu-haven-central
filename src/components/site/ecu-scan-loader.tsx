@@ -1,11 +1,30 @@
-import { useId } from "react";
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Indicador de carregamento: centralina em "blueprint" (traço branco) com um
- * feixe vermelho a percorrê-la, como um scanner de bancada. SVG + CSS puro:
- * nítido em qualquer tamanho, ~3 KB, sem imagens. Respeita reduced-motion.
+ * Indicador de carregamento: centralina Bosch (caixa de alumínio com 4 patilhas,
+ * ficha dupla, alhetas e etiqueta) em 3D com contorno branco. A espessura é
+ * feita com várias camadas da silhueta empilhadas em profundidade (CSS 3D).
+ * Ciclo: linha vermelha percorre o contorno a partir de um ponto; ao fechar a
+ * volta, a centralina roda 360° (lados e costas) e recomeça. Sem imagens.
  */
+
+// Desenho em unidades da viewBox 126 × 142 (proporção da caixa real)
+const VB = "0 0 126 142";
+const PLATE = "M2 30Q2 24 8 24H118Q124 24 124 30V134Q124 140 118 140H8Q2 140 2 134Z";
+const EARS: [number, number][] = [
+  [6, 26],
+  [120, 26],
+  [11, 136],
+  [115, 136],
+];
+const CONNECTOR = "M11 24V4Q11 1 14 1H108Q111 1 111 4V24Z";
+// Contorno completo (caixa + ficha) para a linha vermelha
+const TRACE = "M2 30Q2 24 8 24H11V4Q11 1 14 1H108Q111 1 111 4V24H118Q124 24 124 30V134Q124 140 118 140H8Q2 140 2 134Z";
+
+const LAYERS = 7; // camadas da caixa (espessura)
+const PLUG_LAYERS = 4; // camadas extra da ficha (sai mais para a frente)
+
 export function EcuScanLoader({
   label = "",
   className,
@@ -15,126 +34,46 @@ export function EcuScanLoader({
   className?: string;
   size?: number;
 }) {
-  const uid = useId().replace(/:/g, "");
-  const drawing = `ecu-bp-${uid}`;
-  const clip = `ecu-scan-${uid}`;
-  const glow = `ecu-glow-${uid}`;
+  const w = Math.round(size * 0.6);
+  const h = Math.round((w * 142) / 126);
+  const d = Math.max(10, Math.round(w * 0.16)); // espessura da caixa
+  const vars = { "--w": `${w}px`, "--h": `${h}px` } as CSSProperties;
+  const z = (i: number, n: number) => d / 2 - (d * i) / (n - 1);
 
   return (
-    <div role="status" aria-live="polite" className={cn("flex flex-col items-center gap-3", className)}>
-      <svg viewBox="0 0 320 200" width={size} height={(size * 200) / 320} aria-hidden className="h-auto max-w-full overflow-visible">
-        <defs>
-          {/* Desenho único, reutilizado em branco (base) e vermelho (zona iluminada) */}
-          <g id={drawing} strokeLinecap="round" strokeLinejoin="round">
-            {/* linhas de construção */}
-            <g strokeDasharray="2 4" strokeWidth="0.6" opacity="0.45" fill="none">
-              <line x1="160" y1="10" x2="160" y2="190" />
-              <line x1="8" y1="100" x2="312" y2="100" />
-            </g>
-            {/* marcas de registo nos cantos */}
-            <g strokeWidth="0.8" opacity="0.6" fill="none">
-              <path d="M14 22h10M19 17v10M296 22h10M301 17v10M14 178h10M19 173v10M296 178h10M301 173v10" />
-            </g>
-            {/* patilhas de fixação */}
-            <g strokeWidth="1.2" fill="none">
-              <path d="M44 58h-16a4 4 0 0 0-4 4v16a4 4 0 0 0 4 4h16" />
-              <path d="M44 118h-16a4 4 0 0 0-4 4v16a4 4 0 0 0 4 4h16" />
-              <path d="M276 58h16a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4h-16" />
-              <path d="M276 118h16a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4h-16" />
-              <circle cx="33" cy="70" r="4" />
-              <circle cx="33" cy="130" r="4" />
-              <circle cx="287" cy="70" r="4" />
-              <circle cx="287" cy="130" r="4" />
-            </g>
-            {/* caixa */}
-            <rect x="44" y="40" width="232" height="120" rx="7" strokeWidth="1.6" fill="none" />
-            <rect x="50" y="46" width="220" height="108" rx="4" strokeWidth="0.6" opacity="0.5" fill="none" />
-            {/* ficha de ligação com pinos */}
-            <rect x="56" y="56" width="42" height="88" rx="3" strokeWidth="1.2" fill="none" />
-            <rect x="61" y="61" width="32" height="78" rx="2" strokeWidth="0.6" opacity="0.6" fill="none" />
-            <g strokeWidth="0.8" fill="none">
-              {Array.from({ length: 8 }, (_, r) =>
-                [0, 1, 2].map((c) => <circle key={`${r}-${c}`} cx={68 + c * 9} cy={67 + r * 9.5} r="2" />),
-              )}
-            </g>
-            {/* pistas do PCB */}
-            <g strokeWidth="0.8" fill="none" opacity="0.85">
-              <path d="M98 70h14l8 8h14" />
-              <path d="M98 84h22l6 6h8" />
-              <path d="M98 98h36" />
-              <path d="M98 112h22l6-6h8" />
-              <path d="M98 126h14l8-8h14" />
-              <path d="M194 82h14l6-6h12" />
-              <path d="M194 118h14l6 6h12" />
-              <path d="M164 125v14h40" />
-            </g>
-            {/* microcontrolador */}
-            <rect x="134" y="70" width="60" height="56" rx="2" strokeWidth="1.3" fill="none" />
-            <circle cx="141" cy="77" r="1.6" strokeWidth="0.8" fill="none" />
-            <g strokeWidth="0.8" fill="none">
-              {Array.from({ length: 7 }, (_, i) => (
-                <path key={i} d={`M${140 + i * 8} 70v-5M${140 + i * 8} 126v5`} />
-              ))}
-              {Array.from({ length: 6 }, (_, i) => (
-                <path key={i} d={`M134 ${76 + i * 9}h-5M194 ${76 + i * 9}h5`} />
-              ))}
-            </g>
-            {/* componentes secundários */}
-            <g strokeWidth="1" fill="none">
-              <rect x="226" y="66" width="22" height="18" rx="1.5" />
-              <rect x="226" y="116" width="22" height="18" rx="1.5" />
-              <rect x="204" y="134" width="12" height="10" rx="1" />
-              <circle cx="254" cy="100" r="7" />
-              <circle cx="254" cy="100" r="3" />
-            </g>
-            {/* cota inferior */}
-            <g strokeWidth="0.7" fill="none" opacity="0.7">
-              <path d="M44 166v12M276 166v12M44 174h232" />
-              <path d="M44 174l5-2.5v5zM276 174l-5-2.5v5z" />
-            </g>
-            <text
-              x="160"
-              y="186"
-              textAnchor="middle"
-              fontSize="8"
-              stroke="none"
-              style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.12em" }}
-            >
-              ECU · 232 × 120
-            </text>
-            <text x="164" y="102" textAnchor="middle" fontSize="7" stroke="none" style={{ fontFamily: "var(--font-mono)" }}>
-              MCU
-            </text>
-          </g>
-
-          <clipPath id={clip}>
-            <rect className="ecu-scan-window" x="-40" y="0" width="80" height="200" />
-          </clipPath>
-          <linearGradient id={glow} x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0" stopColor="var(--scan)" stopOpacity="0" />
-            <stop offset="0.5" stopColor="var(--scan)" stopOpacity="0.28" />
-            <stop offset="1" stopColor="var(--scan)" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-
-        {/* base: blueprint branco */}
-        <g stroke="currentColor" fill="currentColor" className="text-foreground/80">
-          <use href={`#${drawing}`} />
-        </g>
-
-        {/* zona iluminada: o mesmo desenho em vermelho, recortado pelo feixe */}
-        <g stroke="var(--scan)" fill="var(--scan)" clipPath={`url(#${clip})`} className="ecu-scan-lit">
-          <use href={`#${drawing}`} />
-        </g>
-
-        {/* feixe */}
-        <g className="ecu-scan-beam">
-          <rect x="-40" y="4" width="80" height="192" fill={`url(#${glow})`} />
-          <rect x="-0.75" y="4" width="1.5" height="192" fill="var(--scan)" />
-          <circle cx="0" cy="4" r="2.2" fill="var(--scan)" />
-          <circle cx="0" cy="196" r="2.2" fill="var(--scan)" />
-        </g>
-      </svg>
+    <div role="status" aria-live="polite" className={cn("flex flex-col items-center gap-4", className)}>
+      <div className="ecu3d" style={{ ...vars, width: size, height: Math.round(h * 1.25) }} aria-hidden>
+        <div className="ecu3d-box">
+          {/* ficha: sai à frente da caixa */}
+          {Array.from({ length: PLUG_LAYERS }, (_, i) => (
+            <div key={`p${i}`} className="ecu3d-layer" style={{ transform: `translateZ(${d / 2 + ((i + 1) * d) / 3}px)` }}>
+              <svg viewBox={VB} className="size-full overflow-visible">
+                <path d={CONNECTOR} className={i === PLUG_LAYERS - 1 ? "ecu3d-solid" : "ecu3d-slice"} />
+                {i === PLUG_LAYERS - 1 && <ConnectorFace />}
+              </svg>
+            </div>
+          ))}
+          {/* corpo: frente, fatias intermédias, costas */}
+          {Array.from({ length: LAYERS }, (_, i) => {
+            const front = i === 0;
+            const back = i === LAYERS - 1;
+            return (
+              <div
+                key={i}
+                className="ecu3d-layer"
+                style={{ transform: back ? `rotateY(180deg) translateZ(${d / 2}px)` : `translateZ(${z(i, LAYERS)}px)` }}
+              >
+                <svg viewBox={VB} className="size-full overflow-visible" style={back ? { transform: "scaleX(-1)" } : undefined}>
+                  <Silhouette className={front || back ? "ecu3d-solid" : "ecu3d-slice"} />
+                  {front && <FrontFace />}
+                  {back && <BackFace />}
+                  {front && <path className="ecu3d-trace" d={TRACE} pathLength={100} />}
+                </svg>
+              </div>
+            );
+          })}
+        </div>
+      </div>
       {label && (
         <p className="mono-label text-muted-foreground">
           {label}
@@ -144,5 +83,83 @@ export function EcuScanLoader({
         </p>
       )}
     </div>
+  );
+}
+
+function Silhouette({ className }: { className: string }) {
+  return (
+    <g className={className}>
+      <path d={PLATE} />
+      {EARS.map(([x, y]) => (
+        <circle key={`${x}-${y}`} cx={x} cy={y} r="6" />
+      ))}
+    </g>
+  );
+}
+
+/** Frente: patilhas com furo, flange da ficha, zona elevada, etiqueta e alhetas. */
+function FrontFace() {
+  return (
+    <g className="ecu3d-detail">
+      {EARS.map(([x, y]) => (
+        <circle key={`${x}-${y}`} cx={x} cy={y} r="2.4" />
+      ))}
+      {/* flange da ficha (triângulos) */}
+      <path d="M15 24h92v9H15z" />
+      <path d="M22 33l7-8 7 8M38 33l7-8 7 8M54 33l7-8 7 8M70 33l7-8 7 8M86 33l7-8 7 8" opacity="0.7" />
+      {/* zona central elevada */}
+      <path d="M19 33V126Q19 130 23 130H86Q90 130 90 126V33" opacity="0.8" />
+      {/* etiqueta */}
+      <rect x="29" y="41" width="53" height="24" rx="2" />
+      <path d="M33 47h22M33 52h30M33 58h40" opacity="0.65" />
+      <text x="78" y="62" textAnchor="end" className="ecu3d-text">
+        BOSCH
+      </text>
+      {/* alhetas esquerda e direita */}
+      <path d="M8 60v56M12 58v60M16 60v56" opacity="0.75" />
+      <path d="M94 56v68M99 56v68M104 56v68M109 56v68M114 58v64" opacity="0.75" />
+      <text x="119" y="88" className="ecu3d-text ecu3d-text-sm" transform="rotate(90 119 88)">
+        3-2 74973
+      </text>
+    </g>
+  );
+}
+
+/** Face da ficha: duas metades com os pernos. */
+function ConnectorFace() {
+  return (
+    <g className="ecu3d-detail">
+      <path d="M56 1v23" />
+      {[18, 30, 44, 66, 80, 94, 104].map((x) => (
+        <circle key={x} cx={x} cy="6" r="1.4" />
+      ))}
+      <rect x="44" y="4" width="10" height="18" rx="2" opacity="0.6" />
+    </g>
+  );
+}
+
+/** Costas: tampa lisa com nervuras, parafusos e furos das patilhas. */
+function BackFace() {
+  return (
+    <g className="ecu3d-detail">
+      {EARS.map(([x, y]) => (
+        <circle key={`${x}-${y}`} cx={x} cy={y} r="2.4" />
+      ))}
+      <rect x="12" y="32" width="102" height="98" rx="4" opacity="0.8" />
+      <path d="M24 46h78M24 116h78" opacity="0.5" />
+      {[
+        [20, 40],
+        [106, 40],
+        [20, 122],
+        [106, 122],
+      ].map(([x, y]) => (
+        <g key={`${x}-${y}`}>
+          <circle cx={x} cy={y} r="3" />
+          <path d={`M${x - 1.6} ${y}h3.2M${x} ${y - 1.6}v3.2`} opacity="0.7" />
+        </g>
+      ))}
+      <rect x="40" y="62" width="46" height="38" rx="2" opacity="0.7" />
+      <path d="M46 72h34M46 80h26M46 88h30" opacity="0.5" />
+    </g>
   );
 }

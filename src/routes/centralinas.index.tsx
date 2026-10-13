@@ -121,8 +121,8 @@ function ReferenceIndexPage() {
             </h2>
             {/* Links simples (sem classes por item): mantém o HTML leve. Estilos em .ref-index (styles.css). */}
             <ul className="ref-index">
-              {items.map(([ref, slug]) => (
-                <li key={ref}>
+              {items.map(([ref, slug], i) => (
+                <li key={`${ref}|${slug ?? i}`}>
                   {slug ? (
                     <a href={`/centralinas/${slug}`} className="on">
                       {ref}

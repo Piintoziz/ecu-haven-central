@@ -69,6 +69,7 @@ export function SiteHeader() {
           </Link>
           <Link
             to="/carrinho"
+            data-cart-target
             className="relative inline-flex h-9 items-center gap-2 rounded-md border border-border px-3 text-sm font-semibold hover:border-primary/60"
             aria-label={l.cartAria(count)}
           >

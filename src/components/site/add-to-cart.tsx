@@ -3,6 +3,7 @@ import { Check, MessageSquareText, ShoppingCart } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
+import { flyToCart } from "@/lib/fly-to-cart";
 import { primaryReference } from "@/lib/format";
 import { useT } from "@/lib/i18n";
 import type { ProductCard } from "@/lib/types";
@@ -53,7 +54,8 @@ export function AddToCartButton({ product, quantity = 1, size = "sm", className,
       variant={added ? "secondary" : "default"}
       aria-live="polite"
       className={cn("font-bold", className)}
-      onClick={() => {
+      onClick={(e) => {
+        if (!added) flyToCart(e.currentTarget);
         add(
           {
             productId: product.id,

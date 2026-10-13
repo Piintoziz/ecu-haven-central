@@ -196,7 +196,7 @@ function ProductPage() {
         </ol>
       </nav>
 
-      <div className="grid gap-10 *:min-w-0 lg:grid-cols-[1fr_420px]">
+      <div data-product className="grid gap-10 *:min-w-0 lg:grid-cols-[1fr_420px]">
         {/* Imagem */}
         <div>
           <div className="rounded-xl border border-border bg-surface p-6 md:p-10">
