@@ -1,36 +1,19 @@
-// Arquitetura modular de pagamentos. A encomenda é criada primeiro (estado
-// pending_payment) e o fornecedor é escolhido depois. Stripe/PayPal ligam-se
-// aqui na próxima fase, com confirmação SEMPRE via webhook no servidor.
+// Métodos de pagamento do checkout. A encomenda é criada primeiro (pending_payment);
+// o pagamento online (Stripe Checkout) é confirmado SEMPRE pelo webhook no servidor
+// (src/routes/api.stripe.webhook.ts).
 
-export type PaymentMethodId = "bank_transfer" | "stripe" | "paypal";
+export type PaymentMethodId = "stripe" | "bank_transfer";
 
-export type PaymentMethod = {
-  id: PaymentMethodId;
-  label: string;
-  description: string;
-  enabled: boolean;
-};
+export type PaymentMethod = { id: PaymentMethodId; enabled: boolean };
 
+// Pagamento online primeiro (mais rápido: a encomenda segue logo); textos em i18n (shop.checkout.methods).
 export const PAYMENT_METHODS: PaymentMethod[] = [
-  {
-    id: "bank_transfer",
-    label: "Transferência bancária",
-    description: "Recebe o IBAN e a referência por email. A encomenda é enviada após confirmação.",
-    enabled: true,
-  },
-  {
-    id: "stripe",
-    label: "Cartão · MB Way · Multibanco",
-    description: "Disponível em breve.",
-    enabled: false,
-  },
-  {
-    id: "paypal",
-    label: "PayPal",
-    description: "Disponível em breve.",
-    enabled: false,
-  },
+  { id: "stripe", enabled: true },
+  { id: "bank_transfer", enabled: true },
 ];
+
+/** Marcas mostradas no checkout. Os métodos reais vêm do Dashboard do Stripe. */
+export const ONLINE_BRANDS = ["Visa", "Mastercard", "Apple Pay", "Google Pay", "MB WAY", "Multibanco", "PayPal"] as const;
 
 /** Contrato que cada gateway terá de implementar (lado servidor). */
 export interface PaymentProvider {

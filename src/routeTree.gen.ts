@@ -43,6 +43,7 @@ import { Route as AdminEncomendasIdRouteImport } from './routes/admin.encomendas
 import { Route as AdminProdutosIndexRouteImport } from './routes/admin.produtos.index'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
 import { Route as ApiEmailsProcessRouteImport } from './routes/api.emails.process'
+import { Route as ApiStripeWebhookRouteImport } from './routes/api.stripe.webhook'
 import { Route as ContaEncomendasCodeRouteImport } from './routes/conta.encomendas.$code'
 
 const IndexRoute = IndexRouteImport.update({
@@ -215,6 +216,11 @@ const ApiEmailsProcessRoute = ApiEmailsProcessRouteImport.update({
   path: '/api/emails/process',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
+  id: '/api/stripe/webhook',
+  path: '/api/stripe/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContaEncomendasCodeRoute = ContaEncomendasCodeRouteImport.update({
   id: '/encomendas/$code',
   path: '/encomendas/$code',
@@ -254,6 +260,7 @@ export interface FileRoutesByFullPath {
   '/admin/encomendas/$id': typeof AdminEncomendasIdRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/api/emails/process': typeof ApiEmailsProcessRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/conta/encomendas/$code': typeof ContaEncomendasCodeRoute
   '/admin/encomendas/': typeof AdminEncomendasIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
@@ -289,6 +296,7 @@ export interface FileRoutesByTo {
   '/admin/encomendas/$id': typeof AdminEncomendasIdRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/api/emails/process': typeof ApiEmailsProcessRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/conta/encomendas/$code': typeof ContaEncomendasCodeRoute
   '/admin/encomendas': typeof AdminEncomendasIndexRoute
   '/admin/produtos': typeof AdminProdutosIndexRoute
@@ -327,6 +335,7 @@ export interface FileRoutesById {
   '/admin/encomendas/$id': typeof AdminEncomendasIdRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/api/emails/process': typeof ApiEmailsProcessRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/conta/encomendas/$code': typeof ContaEncomendasCodeRoute
   '/admin/encomendas/': typeof AdminEncomendasIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
@@ -366,6 +375,7 @@ export interface FileRouteTypes {
     | '/admin/encomendas/$id'
     | '/admin/produtos/$id'
     | '/api/emails/process'
+    | '/api/stripe/webhook'
     | '/conta/encomendas/$code'
     | '/admin/encomendas/'
     | '/admin/produtos/'
@@ -401,6 +411,7 @@ export interface FileRouteTypes {
     | '/admin/encomendas/$id'
     | '/admin/produtos/$id'
     | '/api/emails/process'
+    | '/api/stripe/webhook'
     | '/conta/encomendas/$code'
     | '/admin/encomendas'
     | '/admin/produtos'
@@ -438,6 +449,7 @@ export interface FileRouteTypes {
     | '/admin/encomendas/$id'
     | '/admin/produtos/$id'
     | '/api/emails/process'
+    | '/api/stripe/webhook'
     | '/conta/encomendas/$code'
     | '/admin/encomendas/'
     | '/admin/produtos/'
@@ -467,6 +479,7 @@ export interface RootRouteChildren {
   ProdutoIdRoute: typeof ProdutoIdRoute
   CentralinasIndexRoute: typeof CentralinasIndexRoute
   ApiEmailsProcessRoute: typeof ApiEmailsProcessRoute
+  ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -709,6 +722,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiEmailsProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/stripe/webhook': {
+      id: '/api/stripe/webhook'
+      path: '/api/stripe/webhook'
+      fullPath: '/api/stripe/webhook'
+      preLoaderRoute: typeof ApiStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/conta/encomendas/$code': {
       id: '/conta/encomendas/$code'
       path: '/encomendas/$code'
@@ -783,6 +803,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProdutoIdRoute: ProdutoIdRoute,
   CentralinasIndexRoute: CentralinasIndexRoute,
   ApiEmailsProcessRoute: ApiEmailsProcessRoute,
+  ApiStripeWebhookRoute: ApiStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

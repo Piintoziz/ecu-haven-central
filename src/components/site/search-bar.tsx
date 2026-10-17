@@ -138,7 +138,7 @@ export function SearchBar({ size = "md", defaultValue = "", autoFocus, className
         <button
           type="submit"
           className={cn(
-            "shrink-0 rounded-md bg-primary font-bold text-primary-foreground transition-opacity hover:opacity-90",
+            "shrink-0 rounded-md bg-primary font-bold text-primary-foreground transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.97]",
             lg ? "px-5 py-2.5 text-sm" : "px-3 py-1.5 text-xs",
           )}
         >

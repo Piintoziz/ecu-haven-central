@@ -73,13 +73,18 @@ export const shop = ns({
       payment: "Pagamento",
       paymentMethod: "Método de pagamento",
       methods: {
+        stripe: {
+          label: "Pagamento online",
+          description: "Cartão, Apple Pay, Google Pay, MB WAY, Multibanco ou PayPal, na página segura do Stripe. A encomenda segue assim que o pagamento é confirmado.",
+        },
         bank_transfer: {
           label: "Transferência bancária",
-          description: "Recebe o IBAN e a referência por email. A encomenda é enviada após confirmação.",
+          description: "Recebe o IBAN e a referência por email. A encomenda é enviada depois de o valor chegar à conta (1 a 2 dias úteis).",
         },
-        stripe: { label: "Cartão · MB Way · Multibanco", description: "Disponível em breve." },
-        paypal: { label: "PayPal", description: "Disponível em breve." },
       },
+      redirecting: "A abrir o pagamento…",
+      payOpenFailed: "A encomenda ficou registada, mas não conseguimos abrir o pagamento online.",
+      payRetry: "Tentar pagar outra vez",
       notes: "Notas para a encomenda",
       notesPlaceholder: "Ex.: número de software da centralina original, VIN, horário de entrega…",
       summary: "Resumo",
@@ -260,13 +265,18 @@ export const shop = ns({
       payment: "Payment",
       paymentMethod: "Payment method",
       methods: {
+        stripe: {
+          label: "Online payment",
+          description: "Card, Apple Pay, Google Pay, MB WAY, Multibanco or PayPal, on Stripe's secure page. Your order ships as soon as payment is confirmed.",
+        },
         bank_transfer: {
           label: "Bank transfer",
-          description: "You'll receive the IBAN and reference by email. The order ships after confirmation.",
+          description: "You'll receive the IBAN and reference by email. The order ships once the money reaches our account (1–2 working days).",
         },
-        stripe: { label: "Card · MB Way · Multibanco", description: "Coming soon." },
-        paypal: { label: "PayPal", description: "Coming soon." },
       },
+      redirecting: "Opening payment…",
+      payOpenFailed: "Your order is registered, but we couldn't open the online payment.",
+      payRetry: "Try paying again",
       notes: "Order notes",
       notesPlaceholder: "E.g. software number of the original ECU, VIN, delivery hours…",
       summary: "Summary",

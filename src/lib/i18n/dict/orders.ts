@@ -8,6 +8,13 @@ export const orders = ns({
     trackCarrier: "Seguir na transportadora",
     // /encomenda
     trackTitle: "Acompanhar encomenda",
+    payReturn: {
+      paid: "Pagamento recebido. Obrigado!",
+      processing: "Pagamento em confirmação.",
+      paidText: "Enviámos a confirmação por email. Se pagou com referência Multibanco, a encomenda avança assim que a referência for paga.",
+      cancelled: "O pagamento não foi concluído.",
+      cancelledText: "A encomenda continua reservada durante 24 horas. Pode pagar agora com o botão abaixo.",
+    },
     trackIntro: "Introduza o código que recebeu no fim da compra. Não é preciso conta.",
     trackMetaDescription: "Consulte o estado da sua encomenda com o código recebido — sem necessidade de conta.",
     codeLabel: "Código da encomenda",
@@ -103,6 +110,13 @@ export const orders = ns({
     items: "Items",
     trackCarrier: "Track with carrier",
     trackTitle: "Track your order",
+    payReturn: {
+      paid: "Payment received. Thank you!",
+      processing: "Payment being confirmed.",
+      paidText: "We've emailed you the confirmation. If you paid with a Multibanco reference, the order moves on once the reference is paid.",
+      cancelled: "The payment wasn't completed.",
+      cancelledText: "Your order stays reserved for 24 hours. You can pay now with the button below.",
+    },
     trackIntro: "Enter the code you received at checkout. No account needed.",
     trackMetaDescription: "Check your order status with the code you received — no account needed.",
     codeLabel: "Order code",

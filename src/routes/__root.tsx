@@ -13,7 +13,6 @@ import { MotionConfig } from "framer-motion";
 import { useEffect, useMemo, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { CookieBanner, CookieSettingsDialog } from "@/components/site/cookie-consent";
@@ -60,9 +59,6 @@ function ErrorComponent({ error: raw, reset }: ErrorComponentProps) {
   const router = useRouter();
   const { t } = useI18n();
   const e = t.layout.errors;
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -110,7 +106,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      // Mini centralina laranja (cor da marca): ICO (16/32/48, desenhado ao pixel para ficar nítido no separador)
+      { rel: "icon", href: "/favicon.ico", sizes: "48x48" },
+      { rel: "icon", href: "/favicon-32.png", type: "image/png", sizes: "32x32" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       {
         rel: "preconnect",

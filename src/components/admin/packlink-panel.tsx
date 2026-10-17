@@ -60,7 +60,14 @@ export function PacklinkPanel({ order, onChanged }: { order: AdminOrder; onChang
       return res;
     },
     onSuccess: (r) => {
-      toast.success(`Envio criado na Packlink (${r.reference}) · ${r.service}. Falta pagar no painel Packlink.`);
+      if (r.substituted_from) {
+        toast.warning(
+          `${r.substituted_from} não está disponível na Packlink para este destino. Envio criado com ${r.service} (${r.reference}). Confirme o serviço no painel Packlink antes de pagar.`,
+          { duration: 12000 },
+        );
+      } else {
+        toast.success(`Envio criado na Packlink (${r.reference}) · ${r.service}. Falta pagar no painel Packlink.`);
+      }
       onChanged();
     },
     onError: (e) => toast.error((e as Error).message),

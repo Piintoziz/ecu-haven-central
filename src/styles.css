@@ -491,3 +491,131 @@ body {
 .ref-index a:hover { border-color: color-mix(in oklab, var(--color-primary) 50%, transparent); color: var(--color-foreground); }
 .ref-index a.on { border-color: transparent; background: color-mix(in oklab, var(--color-primary) 15%, transparent); color: var(--color-primary); font-weight: 600; }
 .ref-index a.on:hover { background: var(--color-primary); color: var(--color-primary-foreground); }
+
+/* ---------------------------------------------------------------------------
+   Página inicial: entrada do topo e "leitura" da etiqueta (routes/index.tsx)
+   Só transform/opacity/clip-path; sem JS — se a animação não correr, o conteúdo
+   fica visível. Com reduced-motion não há deslocações.
+   --------------------------------------------------------------------------- */
+:root {
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-settle: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.hero-lines .hero-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.hero-lines .hero-line > span {
+  display: block;
+}
+
+/* Etiqueta: moldura laranja + letra */
+.label-mark {
+  border-radius: 3px;
+  box-shadow:
+    0 0 0 2px var(--primary),
+    0 0 0 5px color-mix(in oklch, var(--primary) 22%, transparent);
+}
+.label-mark-tag {
+  position: absolute;
+  left: -0.55rem;
+  top: -0.95rem;
+  display: grid;
+  place-items: center;
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 4px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.link-sweep {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  transition:
+    background-size 220ms var(--ease-out-soft),
+    color 180ms ease;
+}
+.link-sweep:hover {
+  color: var(--primary);
+  background-size: 0% 1px;
+  background-position: 100% 100%;
+}
+
+.hero-photo img {
+  transition: transform 900ms var(--ease-settle);
+}
+.hero-figure:hover .hero-photo img {
+  transform: scale(1.025);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Título: cada linha sobe de trás da sua própria linha de base */
+  .hero-lines .hero-line > span {
+    animation: hero-line-up 800ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--i, 0) * 90ms + 120ms);
+  }
+  .hero-rise {
+    animation: hero-rise 700ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--i, 0) * 80ms + 180ms);
+  }
+  /* A foto assenta de uma escala ligeira */
+  .hero-photo img {
+    animation: hero-settle 1400ms var(--ease-settle) both;
+  }
+  /* Momento principal: as molduras desenham-se da esquerda para a direita, uma a uma */
+  .label-mark {
+    animation: label-draw 520ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--i, 0) * 380ms + 900ms);
+  }
+  .label-mark-tag {
+    animation: label-tag 300ms var(--ease-out-soft) both;
+    animation-delay: calc(var(--i, 0) * 380ms + 1200ms);
+  }
+  /* A legenda correspondente acende quando a sua moldura acaba */
+  .label-key {
+    animation: label-key 400ms ease both;
+    animation-delay: calc(var(--i, 0) * 380ms + 1250ms);
+  }
+}
+
+@keyframes hero-line-up {
+  from {
+    transform: translateY(105%);
+  }
+}
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+@keyframes hero-settle {
+  from {
+    transform: scale(1.06);
+  }
+}
+@keyframes label-draw {
+  from {
+    clip-path: inset(-18px 100% -12px -12px);
+  }
+  to {
+    clip-path: inset(-18px -12px -12px -12px);
+  }
+}
+@keyframes label-tag {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+@keyframes label-key {
+  from {
+    opacity: 0.35;
+  }
+}
+

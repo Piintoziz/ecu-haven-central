@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Loader2, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
+import { PayRetry } from "@/components/site/order-complete";
 import { OrderView } from "@/components/site/order-view";
 import { Button } from "@/components/ui/button";
 import { trackOrder } from "@/lib/orders.functions";
@@ -12,7 +13,13 @@ import type { TrackedOrder } from "@/lib/types";
 
 export const Route = createFileRoute("/encomenda")({
   validateSearch: (s: Record<string, unknown>) =>
-    z.object({ codigo: z.string().max(20).optional().catch(undefined) }).parse(s),
+    z
+      .object({
+        codigo: z.string().max(20).optional().catch(undefined),
+        // Regresso da página de pagamento do Stripe
+        pagamento: z.enum(["ok", "cancelado"]).optional().catch(undefined),
+      })
+      .parse(s),
   head: ({ match }) => {
     const { locale, t } = headI18n(match);
     return pageHead({ title: t.orders.trackTitle, description: t.orders.trackMetaDescription, path: "/encomenda", noindex: true, locale });
@@ -29,7 +36,7 @@ function formatCode(raw: string): string {
 }
 
 function EncomendaPage() {
-  const { codigo } = Route.useSearch();
+  const { codigo, pagamento } = Route.useSearch();
   const [code, setCode] = useState(codigo ? formatCode(codigo) : "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -106,6 +113,26 @@ function EncomendaPage() {
           </p>
         )}
 
+        {pagamento && order && (
+          <div
+            role="status"
+            className={`mt-8 rounded-xl border p-5 ${pagamento === "ok" ? "border-success/50 bg-success/10" : "border-warning/50 bg-warning/10"}`}
+          >
+            <p className="font-bold">
+              {pagamento === "ok"
+                ? order.payment_status === "captured"
+                  ? o.payReturn.paid
+                  : o.payReturn.processing
+                : o.payReturn.cancelled}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {pagamento === "ok" ? o.payReturn.paidText : o.payReturn.cancelledText}
+            </p>
+          </div>
+        )}
+        {order?.status === "pending_payment" && order.payment_status !== "captured" && pagamento !== "ok" && (
+          <PayRetry code={order.order_code} />
+        )}
         {order && <OrderView order={order} />}
       </div>
     </div>

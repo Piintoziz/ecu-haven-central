@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import type { CSSProperties, ReactNode } from "react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { BrandMarquee } from "@/components/site/brand-marquee";
 import { ProductCard } from "@/components/site/product-card";
-import { Reveal } from "@/components/site/reveal";
+import { CountUp } from "@/components/site/count-up";
+import { Reveal, Stagger, StaggerItem } from "@/components/site/reveal";
 import { SearchBar } from "@/components/site/search-bar";
 import { getFacets, searchCatalog } from "@/lib/catalog";
-import { servicesFor } from "@/lib/content";
+import { COMPANY, servicesFor } from "@/lib/content";
 import { headI18n, useI18n } from "@/lib/i18n";
 import { pageHead } from "@/lib/seo";
 
@@ -22,7 +24,7 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+const ECU_PHOTO = "/images/centralina-bosch-edc16.jpg";
 
 function HomePage() {
   const { facets, latest } = Route.useLoaderData();
@@ -32,104 +34,100 @@ function HomePage() {
   return (
     <>
       {/* ---------- Pesquisa por referência ---------- */}
-      <section className="relative isolate overflow-hidden border-b border-border">
-        {/* Fundo: Veyron preto/laranja "camuflado" no preto (foto fornecida pelo cliente) */}
-        <div className="absolute inset-0 -z-20" aria-hidden>
-          <img
-            src="/images/hero-veyron.webp"
-            alt=""
-            fetchPriority="high"
-            decoding="async"
-            className="h-full w-full object-cover object-[50%_58%] opacity-40 saturate-[0.9]"
-          />
-          {/* escurece mais do lado do texto e funde com a secção seguinte */}
-          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-background/55" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/60" />
-        </div>
-        <div className="absolute inset-0 -z-10 grid-noise opacity-60" aria-hidden />
-        <div className="container-page grid items-center gap-12 py-14 *:min-w-0 md:py-20 lg:grid-cols-[1.1fr_0.9fr]">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: EASE }}
-          >
-            <p className="mb-5 inline-flex items-center gap-2 font-mono text-xs text-muted-foreground">
-              <span className="size-1.5 rounded-full bg-success" aria-hidden />
-              {h.activeRefs(facets.total.toLocaleString(t.common.intl))}
+      <section className="hero-home border-b border-border">
+        <div className="container-page grid gap-10 py-12 *:min-w-0 md:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14">
+          <div>
+            <p className="hero-rise text-sm text-muted-foreground" style={{ "--i": 0 } as CSSProperties}>
+              {h.eyebrow}
             </p>
-            <h1 className="text-4xl font-extrabold leading-[1.05] tracking-tight md:text-5xl lg:text-[3.4rem]">
-              {h.h1a}
-              <br />
-              <span className="text-primary">{h.h1b}</span>
+            <h1 className="hero-lines mt-3 max-w-xl text-4xl font-extrabold leading-[1.08] tracking-tight md:text-5xl">
+              {h.h1.split("|").map((line, i) => (
+                <span key={line} className="hero-line">
+                  <span style={{ "--i": i } as CSSProperties}>{line}</span>
+                </span>
+              ))}
             </h1>
-            <p className="mt-5 max-w-xl text-base text-muted-foreground md:text-lg">
+            <p className="hero-rise mt-4 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg" style={{ "--i": 2 } as CSSProperties}>
               {h.lead}
             </p>
-            <SearchBar size="lg" className="mt-8 max-w-2xl" />
-            <ul className="mt-8 grid gap-2 text-sm text-foreground/85 sm:grid-cols-3">
-              {h.perks.map((perk) => (
-                <li key={perk} className="flex items-center gap-2">
-                  <Check className="size-4 shrink-0 text-primary" aria-hidden />
-                  {perk}
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          <motion.figure
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
-            className="relative rounded-xl border border-border bg-surface/80 p-6 backdrop-blur"
-          >
-            <div className="relative overflow-hidden rounded-lg border border-border bg-background">
-              {/* Centralina real (Bosch Motronic usada) — foto CC BY-SA 3.0, ver crédito abaixo */}
-              <img
-                src="/images/ecu-motronic.webp"
-                alt={h.photoAlt}
-                width={1280}
-                height={960}
-                loading="eager"
-                className="block aspect-[4/3] w-full object-cover brightness-[0.82] contrast-[1.08] saturate-[0.8]"
-              />
-              {/* vinheta: funde a mesa de madeira com o cartão escuro */}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgb(0_0_0/0.55)_100%)]"
-              />
-              {/* anotações: onde encontrar a referência */}
-              <Callout className="left-[51%] top-[44%]" n={1} />
-              <Callout className="left-[30%] top-[13%]" n={2} />
-              <Callout className="left-[17%] top-[80%]" n={3} />
-            </div>
-            <figcaption className="mt-5 border-t border-border pt-4">
-              <p className="mono-label mb-3 text-primary">{h.whereRef}</p>
-              <ol className="space-y-1.5 text-sm text-muted-foreground">
-                <li>
-                  <b className="font-mono text-foreground">1</b> · {h.where1}
-                </li>
-                <li>
-                  <b className="font-mono text-foreground">2</b> · {h.where2}
-                </li>
-                <li>
-                  <b className="font-mono text-foreground">3</b> · {h.where3}
-                </li>
-              </ol>
-              <p className="mt-3 text-[10px] text-muted-foreground/60">
-                {h.photo}{" "}
-                <a
-                  href="https://commons.wikimedia.org/wiki/File:Motronic-Steuerger%C3%A4t.JPG"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline-offset-2 hover:underline"
-                >
-                  Mib18, Wikimedia Commons
-                </a>{" "}
-                · CC BY-SA 3.0
+            <div className="hero-rise" style={{ "--i": 3 } as CSSProperties}>
+              <SearchBar size="lg" className="mt-7 max-w-2xl" />
+              <p className="mt-4 text-sm text-muted-foreground">
+                {h.noRef}{" "}
+                <Link to="/contactos" className="link-sweep font-semibold text-foreground">
+                  {h.noRefCta}
+                </Link>{" "}
+                {h.orCall}{" "}
+                <a href={COMPANY.phoneHref} className="link-sweep whitespace-nowrap font-semibold text-foreground">
+                  {COMPANY.phone.replace("+351 ", "")}
+                </a>
+                .
               </p>
+            </div>
+            <dl className="hero-rise mt-9 grid max-w-2xl grid-cols-2 gap-x-6 gap-y-5 border-t border-border pt-6 sm:grid-cols-4" style={{ "--i": 4 } as CSSProperties}>
+              <Fact k={<CountUp end={facets.total} duration={1200} />} v={h.factOnline} />
+              <Fact k={<CountUp end={10000} prefix="+" duration={1400} />} v={h.factStock} />
+              <Fact k="24 h" v={h.factShip} />
+              <Fact k={`12 ${h.months}`} v={h.factWarranty} />
+            </dl>
+          </div>
+
+          {/* Momento principal: as marcas "leem" a etiqueta, uma de cada vez, e a legenda acende em sincronia */}
+          <figure className="hero-figure mx-auto w-full max-w-md rounded-xl border border-border bg-surface p-4 lg:mr-0">
+            <p className="mb-3 text-sm font-bold">{h.labelTitle}</p>
+            <div className="hero-photo relative overflow-hidden rounded-lg bg-[#e9e9e7]">
+              <img
+                src={ECU_PHOTO}
+                alt={h.labelAlt}
+                width={1050}
+                height={1080}
+                fetchPriority="high"
+                decoding="async"
+                className="block h-auto w-full"
+              />
+              <LabelMark n={0} letter="A" className="left-[38.9%] top-[58.6%] h-[3.2%] w-[15%]" />
+              <LabelMark n={1} letter="B" className="left-[38.9%] top-[68.6%] h-[3.2%] w-[11.8%]" />
+              <LabelMark n={2} letter="C" className="left-[57.6%] top-[57.1%] h-[2.6%] w-[11%]" />
+            </div>
+            <figcaption>
+              <dl className="mt-4 grid gap-2.5 text-sm">
+                {(
+                  [
+                    ["A", h.labelA, h.labelAText],
+                    ["B", h.labelB, h.labelBText],
+                    ["C", h.labelC, h.labelCText],
+                  ] as const
+                ).map(([l, title, text], i) => (
+                  <div key={l} className="label-key flex gap-2.5" style={{ "--i": i } as CSSProperties}>
+                    <span className="grid size-5 shrink-0 place-items-center rounded bg-primary text-[11px] font-bold text-primary-foreground">
+                      {l}
+                    </span>
+                    <div>
+                      <dt className="font-semibold leading-tight">{title}</dt>
+                      <dd className="mt-0.5 text-muted-foreground">{text}</dd>
+                    </div>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-3 text-xs text-muted-foreground">{h.labelNote}</p>
             </figcaption>
-          </motion.figure>
+          </figure>
         </div>
+      </section>
+
+      {/* ---------- Como comprar ---------- */}
+      <section className="border-b border-border bg-surface/40">
+        <Stagger className="container-page grid gap-6 py-8 sm:grid-cols-3" stagger={0.09}>
+          {h.steps.map((s, i) => (
+            <StaggerItem key={s.t} className="flex gap-3">
+              <span className="font-mono text-sm font-bold text-primary">{i + 1}.</span>
+              <div>
+                <p className="font-bold">{s.t}</p>
+                <p className="mt-0.5 text-sm text-muted-foreground">{s.d}</p>
+              </div>
+            </StaggerItem>
+          ))}
+        </Stagger>
       </section>
 
       {/* ---------- Entradas recentes ---------- */}
@@ -261,13 +259,20 @@ function HomePage() {
   );
 }
 
-function Callout({ n, className }: { n: number; className?: string }) {
+/** Moldura sobre um número da etiqueta, desenhada em sequência (ver .label-mark em styles.css). */
+function LabelMark({ n, letter, className }: { n: number; letter: string; className?: string }) {
   return (
-    <span
-      aria-hidden
-      className={`absolute grid size-6 place-items-center rounded-full bg-primary font-mono text-[11px] font-bold text-primary-foreground shadow-[0_0_0_4px_var(--color-surface)] ${className ?? ""}`}
-    >
-      {n}
+    <span aria-hidden className={`label-mark absolute ${className ?? ""}`} style={{ "--i": n } as CSSProperties}>
+      <span className="label-mark-tag">{letter}</span>
     </span>
+  );
+}
+
+function Fact({ k, v }: { k: ReactNode; v: string }) {
+  return (
+    <div>
+      <dt className="text-xl font-extrabold tabular-nums md:text-2xl">{k}</dt>
+      <dd className="mt-0.5 text-xs leading-snug text-muted-foreground md:text-sm">{v}</dd>
+    </div>
   );
 }

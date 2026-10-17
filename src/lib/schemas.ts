@@ -86,6 +86,8 @@ export const orderInputSchema = z
     access_token: z.string().max(4096).optional(),
     // Idioma dos emails da encomenda
     locale: localeSchema,
+    // Pagamento online (Stripe Checkout) ou transferência bancária
+    payment_method: z.enum(["stripe", "bank_transfer"]).default("stripe"),
   })
   .refine((v) => v.billing_same_as_shipping || !!v.billing_address, {
     message: "Morada de faturação em falta",
@@ -93,6 +95,11 @@ export const orderInputSchema = z
   });
 
 export type OrderInput = z.input<typeof orderInputSchema>;
+
+export const payNowSchema = z.object({
+  code: z.string().trim().toUpperCase().regex(/^CT-[2-9A-HJ-NP-Z]{5}-[2-9A-HJ-NP-Z]{5}$/),
+  locale: localeSchema,
+});
 
 export const ORDER_CODE_RE = /^CT-[2-9A-HJ-NP-Z]{5}-[2-9A-HJ-NP-Z]{5}$/;
 

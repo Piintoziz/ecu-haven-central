@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { orderInputSchema, trackInputSchema } from "./schemas";
+import { orderInputSchema, payNowSchema, trackInputSchema } from "./schemas";
 import type { TrackedOrder } from "./types";
 
 export type PlaceOrderResult =
@@ -13,6 +13,10 @@ export type PlaceOrderResult =
       total_cents: number;
       /** Dados para o passo "Pagar" (transferência bancária); null se ainda não configurados. */
       bank: BankDetails | null;
+      /** Pagamento online: página do Stripe para onde o cliente é levado. */
+      pay_url: string | null;
+      /** Pagamento online escolhido mas a página não abriu (o cliente pode tentar de novo). */
+      pay_error: string | null;
     }
   | { ok: false; error: string };
 
@@ -81,6 +85,20 @@ export const placeOrder = createServerFn({ method: "POST" })
         const { error: locErr } = await admin.from("orders").update({ locale: data.locale }).eq("order_code", code);
         if (locErr) console.error("[place_order locale]", locErr.message);
       }
+      // Pagamento online: grava o método e abre a página do Stripe.
+      let payUrl: string | null = null;
+      let payError: string | null = null;
+      if (data.payment_method === "stripe") {
+        const code = (res as { order_code: string }).order_code;
+        await admin.from("orders").update({ payment_method: "stripe" }).eq("order_code", code);
+        try {
+          const { openStripeCheckout } = await import("./server/payments");
+          payUrl = await openStripeCheckout(admin, code, data.locale === "en" ? "en" : "pt");
+        } catch (err) {
+          console.error("[stripe checkout]", err);
+          payError = toPublicMessage(err, "Não foi possível abrir o pagamento.");
+        }
+      }
       // Confirmação ao cliente + aviso ao admin saem já; falhas ficam na fila para o cron.
       const { flushOutboxQuietly } = await import("./server/email");
       await flushOutboxQuietly(4);
@@ -103,6 +121,8 @@ export const placeOrder = createServerFn({ method: "POST" })
       return {
         ok: true,
         bank: bank?.iban ? bank : null,
+        pay_url: payUrl,
+        pay_error: payError,
         order_code: r.order_code,
         email: data.email,
         subtotal_cents: r.subtotal_cents,
@@ -158,5 +178,23 @@ export const trackOrder = createServerFn({ method: "POST" })
       return { ok: true, order: res as TrackedOrder };
     } catch (err) {
       return { ok: false, error: toPublicMessage(err, "Serviço temporariamente indisponível.") };
+    }
+  });
+
+export type PayNowResult = { ok: true; url: string } | { ok: false; error: string };
+
+/** "Pagar agora" para uma encomenda por pagar (página de acompanhamento / regresso do Stripe). */
+export const payNow = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => payNowSchema.parse(input))
+  .handler(async ({ data }): Promise<PayNowResult> => {
+    const { getAdminClient } = await import("./server/supabase-admin");
+    const { enforceRateLimit, toPublicMessage } = await import("./server/security");
+    try {
+      await enforceRateLimit("paynow", 10, 10 * 60);
+      const { openStripeCheckout } = await import("./server/payments");
+      const url = await openStripeCheckout(getAdminClient(), data.code, data.locale === "en" ? "en" : "pt");
+      return { ok: true, url };
+    } catch (err) {
+      return { ok: false, error: toPublicMessage(err, "Não foi possível abrir o pagamento.") };
     }
   });

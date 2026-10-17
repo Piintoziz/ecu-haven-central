@@ -44,7 +44,7 @@ export const packlinkCreateShipment = createServerFn({ method: "POST" })
       })
       .parse(input),
   )
-  .handler(async ({ data }): Promise<Result<{ reference: string; service: string; collection_date?: string }>> => {
+  .handler(async ({ data }): Promise<Result<{ reference: string; service: string; collection_date?: string; substituted_from: string | null }>> => {
     try {
       const admin = await requireStaff(data.access_token);
       const { createPacklinkDraft } = await import("./server/packlink");
@@ -90,6 +90,8 @@ export const packlinkCreateShipment = createServerFn({ method: "POST" })
         reference: res.reference,
         service: `${res.service.carrier_name} · ${res.service.name}`,
         collection_date: res.collection_date,
+        // A transportadora da tarifa paga pelo cliente já não está disponível na Packlink
+        substituted_from: res.substituted ? (rate?.carrier ?? null) : null,
       };
     } catch (err) {
       return fail(err, "Não foi possível criar o envio na Packlink.");

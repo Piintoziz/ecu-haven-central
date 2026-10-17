@@ -73,19 +73,41 @@ type Address = {
   country_code: string;
 };
 
+/**
+ * Código postal no formato que a Packlink aceita (a API devolve "Bad Request" sem isto):
+ * CZ/SK/SE/GR "123 45", PT "1234-567". Os restantes seguem como o cliente escreveu.
+ */
+export function packlinkZip(country: string, zip: string): string {
+  const z = zip.trim().toUpperCase();
+  const digits = z.replace(/D/g, "");
+  if (["CZ", "SK", "SE", "GR"].includes(country) && digits.length === 5) return `${digits.slice(0, 3)} ${digits.slice(3)}`;
+  if (country === "PT" && digits.length === 7) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+  return z;
+}
+
 function splitName(full: string): { name: string; surname: string } {
   const parts = full.trim().split(/\s+/);
   if (parts.length === 1) return { name: parts[0]!, surname: parts[0]! };
   return { name: parts.slice(0, -1).join(" "), surname: parts[parts.length - 1]! };
 }
 
-/** Serviço a usar: o da tarifa escolhida no checkout, senão o mais barato da mesma transportadora com recolha. */
-async function pickService(to: Address, parcel: Parcel, serviceId: number | null, carrier: string | null) {
+/**
+ * Serviço a usar: o da tarifa escolhida no checkout; senão o mais barato da mesma
+ * transportadora com recolha; senão (transportadora deixou de estar disponível na
+ * conta Packlink) o serviço com recolha mais barato para o destino — `substituted`
+ * indica ao backoffice que a transportadora mudou.
+ */
+async function pickService(
+  to: Address,
+  parcel: Parcel,
+  serviceId: number | null,
+  carrier: string | null,
+): Promise<{ service: Service; substituted: boolean }> {
   const qs = new URLSearchParams({
     "from[country]": "PT",
     "from[zip]": WAREHOUSE.postal_code,
     "to[country]": to.country_code,
-    "to[zip]": to.postal_code,
+    "to[zip]": packlinkZip(to.country_code, to.postal_code),
     "packages[0][weight]": String(parcel.weight_g / 1000),
     "packages[0][length]": String(parcel.length_cm),
     "packages[0][width]": String(parcel.width_cm),
@@ -94,12 +116,14 @@ async function pickService(to: Address, parcel: Parcel, serviceId: number | null
   const list = await pl<Service[]>(`/services?${qs}`);
   const pickup = (Array.isArray(list) ? list : []).filter((s) => !s.dropoff && !s.delivery_to_parcelshop);
   const byId = serviceId ? pickup.find((s) => s.id === serviceId) : undefined;
-  if (byId) return byId;
+  if (byId) return { service: byId, substituted: false };
   const c = (carrier ?? "").toLowerCase().split(/\s+/)[0] ?? "";
   const same = pickup
     .filter((s) => c && s.carrier_name.toLowerCase().includes(c))
     .sort((a, b) => (a.price?.total_price ?? 0) - (b.price?.total_price ?? 0));
-  if (same[0]) return same[0];
+  if (same[0]) return { service: same[0], substituted: false };
+  const cheapest = [...pickup].sort((a, b) => (a.price?.total_price ?? 0) - (b.price?.total_price ?? 0))[0];
+  if (cheapest) return { service: cheapest, substituted: true };
   throw new PacklinkError(
     `Nenhum serviço Packlink com recolha disponível para ${to.country_code} ${to.postal_code}${carrier ? ` (${carrier})` : ""}.`,
   );
@@ -120,11 +144,11 @@ export async function createPacklinkDraft(input: {
   content_value_eur: number;
   service_id: number | null;
   carrier: string | null;
-}): Promise<{ reference: string; service: Service; collection_date?: string }> {
+}): Promise<{ reference: string; service: Service; substituted: boolean; collection_date?: string }> {
   if (/0{3}\s?0{3}/.test(WAREHOUSE.phone)) {
     throw new PacklinkError("Defina o telefone real do armazém em src/lib/content.ts (COMPANY.phone) antes de criar envios.");
   }
-  const service = await pickService(input.to, input.parcel, input.service_id, input.carrier);
+  const { service, substituted } = await pickService(input.to, input.parcel, input.service_id, input.carrier);
   const collection_date = firstCollectionDate(service);
   const sender = splitName(WAREHOUSE.contact_name);
   const recipient = splitName(input.to.full_name);
@@ -148,7 +172,7 @@ export async function createPacklinkDraft(input: {
       company: input.to.company_name ?? "",
       street1: input.to.line1,
       street2: input.to.line2 ?? "",
-      zip_code: input.to.postal_code,
+      zip_code: packlinkZip(input.to.country_code, input.to.postal_code),
       city: input.to.city,
       state: input.to.region ?? "",
       country: input.to.country_code,
@@ -170,7 +194,7 @@ export async function createPacklinkDraft(input: {
   };
   const res = await pl<{ reference: string }>("/shipments", { method: "POST", body: JSON.stringify(body) });
   if (!res?.reference) throw new PacklinkError("A Packlink não devolveu a referência do envio.");
-  return { reference: res.reference, service, collection_date };
+  return { reference: res.reference, service, substituted, collection_date };
 }
 
 export async function getPacklinkShipment(ref: string): Promise<PacklinkShipment> {

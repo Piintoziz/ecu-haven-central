@@ -1,14 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, Banknote, Check, Copy, Mail, PackageSearch, Truck, UserRound } from "lucide-react";
+import { ArrowRight, Banknote, Check, Copy, CreditCard, Mail, PackageSearch, Truck, UserRound } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { AddressBlock, type AddressLike } from "./address-block";
 import { CheckoutSteps } from "./checkout-steps";
 import type { CartLine } from "@/lib/cart";
 import { COMPANY } from "@/lib/content";
-import { useT } from "@/lib/i18n";
-import type { BankDetails } from "@/lib/orders.functions";
+import { useI18n, useT } from "@/lib/i18n";
+import { payNow, type BankDetails } from "@/lib/orders.functions";
 import type { ShippingOption } from "@/lib/types";
 
 export type CompletedOrder = {
@@ -23,6 +23,8 @@ export type CompletedOrder = {
   shipTo: AddressLike;
   rate: ShippingOption | null;
   hasAccount: boolean;
+  /** Pagamento online escolhido mas a página do Stripe não abriu. */
+  payError?: string | null;
 };
 
 /** Passos 3 (Pagar) e 4 (Informações da encomenda), depois de a encomenda ser registada. */
@@ -82,6 +84,37 @@ function CopyValue({ label, value, mono = true }: { label: string; value: string
   );
 }
 
+/** Volta a tentar abrir o pagamento online (Stripe) para esta encomenda. */
+export function PayRetry({ code, message }: { code: string; message?: string | null }) {
+  const { t, locale } = useI18n();
+  const c = t.shop.checkout;
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  return (
+    <div className="mt-6 rounded-xl border border-warning/50 bg-warning/10 p-5">
+      {message && <p className="text-sm font-semibold">{c.payOpenFailed}</p>}
+      {(error ?? message) && <p className="mt-1 text-sm text-muted-foreground">{error ?? message}</p>}
+      <Button
+        type="button"
+        className="mt-4 font-bold"
+        disabled={busy}
+        onClick={async () => {
+          setBusy(true);
+          setError(null);
+          const res = await payNow({ data: { code, locale } }).catch(() => null);
+          if (res?.ok) window.location.assign(res.url);
+          else {
+            setError(res?.error ?? c.payOpenFailed);
+            setBusy(false);
+          }
+        }}
+      >
+        <CreditCard /> {c.payRetry}
+      </Button>
+    </div>
+  );
+}
+
 function PayStep({ order, onDone }: { order: CompletedOrder; onDone: () => void }) {
   const t = useT();
   const p = t.orders.pay;
@@ -92,6 +125,8 @@ function PayStep({ order, onDone }: { order: CompletedOrder; onDone: () => void 
         <p className="mt-2 text-muted-foreground">
           {p.registered} <b className="font-mono text-foreground">{order.order_code}</b> {p.registered2}
         </p>
+
+        {order.payError && <PayRetry code={order.order_code} message={order.payError} />}
 
         <div className="mt-8 rounded-xl border border-primary/40 bg-surface p-6">
           <div className="flex items-center gap-3">

@@ -16,7 +16,8 @@ import { getShippingOptions } from "@/lib/catalog";
 import { COUNTRIES } from "@/lib/countries";
 import { headI18n, useI18n, useT } from "@/lib/i18n";
 import { placeOrder } from "@/lib/orders.functions";
-import { PAYMENT_METHODS } from "@/lib/payments";
+import { ONLINE_BRANDS, PAYMENT_METHODS } from "@/lib/payments";
+import { EcuScanLoader } from "@/components/site/ecu-scan-loader";
 import { orderInputSchema } from "@/lib/schemas";
 import { pageHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -87,6 +88,7 @@ function CheckoutPage() {
   }, []);
   const [serverError, setServerError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | undefined>();
+  const [redirecting, setRedirecting] = useState(false);
   const onToken = useCallback((t: string | undefined) => setTurnstileToken(t), []);
 
   const {
@@ -106,7 +108,7 @@ function CheckoutPage() {
       billing_same_as_shipping: true,
       billing_address: emptyAddress,
       shipping_rate_id: "",
-      payment_method: "bank_transfer",
+      payment_method: "stripe",
       notes: "",
       accept_terms: false,
       website: "",
@@ -142,6 +144,7 @@ function CheckoutPage() {
   const hasDestination = !!country && (postalCode ?? "").trim().length >= 3;
   const sameBilling = watch("billing_same_as_shipping");
   const rateId = watch("shipping_rate_id");
+  const paymentMethod = watch("payment_method");
 
   const items = useMemo(
     () => cart.lines.map((l) => ({ product_id: l.productId, quantity: l.quantity })),
@@ -184,6 +187,7 @@ function CheckoutPage() {
       turnstile_token: turnstileToken,
       access_token: auth.session?.access_token,
       locale,
+      payment_method: values.payment_method === "bank_transfer" ? "bank_transfer" : "stripe",
     };
 
     const parsed = orderInputSchema.safeParse(payload);
@@ -198,6 +202,13 @@ function CheckoutPage() {
 
     try {
       const res = await placeOrder({ data: payload });
+      if (res.ok && res.pay_url) {
+        // Pagamento online: o carrinho fica vazio e o cliente segue para o Stripe.
+        cart.clear();
+        setRedirecting(true);
+        window.location.assign(res.pay_url);
+        return;
+      }
       if (res.ok) {
         setDone({
           order_code: res.order_code,
@@ -211,6 +222,7 @@ function CheckoutPage() {
           shipTo: values.shipping_address,
           rate: selectedRate ?? null,
           hasAccount: !!auth.user,
+          payError: res.pay_error,
         });
         cart.clear();
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -223,6 +235,13 @@ function CheckoutPage() {
   }
 
   if (done) return <OrderComplete order={done} />;
+  if (redirecting) {
+    return (
+      <div className="container-page grid min-h-[50vh] place-items-center py-20">
+        <EcuScanLoader label={c.redirecting} />
+      </div>
+    );
+  }
 
 
   if (cart.ready && cart.lines.length === 0) {
@@ -364,14 +383,27 @@ function CheckoutPage() {
                 <label
                   key={m.id}
                   className={cn(
-                    "flex items-start gap-3 rounded-lg border p-4",
-                    m.enabled ? "cursor-pointer border-border hover:border-primary/40" : "border-border/60 opacity-60",
+                    "flex items-start gap-3 rounded-lg border p-4 transition-colors",
+                    !m.enabled
+                      ? "border-border/60 opacity-60"
+                      : paymentMethod === m.id
+                        ? "cursor-pointer border-primary bg-primary/5"
+                        : "cursor-pointer border-border hover:border-primary/40",
                   )}
                 >
                   <input type="radio" value={m.id} disabled={!m.enabled} className="mt-1 accent-[var(--color-primary)]" {...register("payment_method")} />
                   <span>
                     <span className="block text-sm font-bold">{c.methods[m.id].label}</span>
                     <span className="text-xs text-muted-foreground">{c.methods[m.id].description}</span>
+                    {m.id === "stripe" && (
+                      <span className="mt-2 flex flex-wrap gap-1.5">
+                        {ONLINE_BRANDS.map((b) => (
+                          <span key={b} className="rounded border border-border bg-background px-1.5 py-0.5 text-[11px] font-semibold text-foreground/80">
+                            {b}
+                          </span>
+                        ))}
+                      </span>
+                    )}
                   </span>
                 </label>
               ))}
