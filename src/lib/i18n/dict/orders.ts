@@ -75,10 +75,10 @@ export const orders = ns({
     },
     summary: {
       order: "Encomenda",
-      subtotal: "Subtotal",
+      subtotal: "Subtotal (s/ IVA)",
       shipping: "Portes",
       total: "Total",
-      vat: "IVA incluído",
+      vat: "IVA (23%)",
     },
     // conta
     account: {
@@ -101,7 +101,7 @@ export const orders = ns({
       billing: "Faturação",
       shipping: "Envio",
       total: "Total",
-      vatIncluded: "IVA incluído",
+      vatIncluded: "IVA",
     },
   },
   en: {
@@ -175,10 +175,10 @@ export const orders = ns({
     },
     summary: {
       order: "Order",
-      subtotal: "Subtotal",
+      subtotal: "Subtotal (excl. VAT)",
       shipping: "Shipping",
       total: "Total",
-      vat: "VAT included",
+      vat: "VAT (23%)",
     },
     account: {
       area: "Customer area",
@@ -199,7 +199,7 @@ export const orders = ns({
       billing: "Billing",
       shipping: "Shipping",
       total: "Total",
-      vatIncluded: "VAT included",
+      vatIncluded: "VAT",
     },
   },
 });

@@ -1,8 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Await, createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { getLegacyReferenceIndex } from "@/lib/catalog";
-import { headI18n, useI18n } from "@/lib/i18n";
+import { EcuScanLoader } from "@/components/site/ecu-scan-loader";
+import { headI18n, useI18n, useT } from "@/lib/i18n";
 import { pageHead } from "@/lib/seo";
 
 // Índice de referências: mesmo endereço e conteúdo da página do site antigo
@@ -45,10 +46,10 @@ const TEXT = {
 };
 
 export const Route = createFileRoute("/centralinas/")({
-  // Dados compactos ([ref, slug]) para a página não ficar pesada (13 mil linhas).
-  loader: async () => ({
-    refs: (await getLegacyReferenceIndex()).map((r): [string, string | null] => [r.ref, r.slug]),
-  }),
+  // Dados compactos ([ref, slug]) para a página não ficar pesada (15 mil linhas).
+  // Não se espera pelos dados: a página abre logo com o loader da centralina e a
+  // lista chega a seguir (no SSR vem no mesmo HTML, em streaming — boa para o Google).
+  loader: () => ({ refs: getLegacyReferenceIndex() }),
   // A lista muda pouco: evita repetir o pedido em cada navegação
   staleTime: 10 * 60_000,
   head: ({ match }) => {
@@ -76,6 +77,22 @@ function groupRefs(refs: Ref[]) {
 
 function ReferenceIndexPage() {
   const { refs } = Route.useLoaderData();
+  const t = useT();
+  return (
+    <Await
+      promise={refs}
+      fallback={
+        <div className="grid min-h-[60vh] place-items-center">
+          <EcuScanLoader label={t.layout.loader} />
+        </div>
+      }
+    >
+      {(data) => <ReferenceIndex refs={data} />}
+    </Await>
+  );
+}
+
+function ReferenceIndex({ refs }: { refs: Ref[] }) {
   const { locale } = useI18n();
   const x = TEXT[locale];
   const [q, setQ] = useState("");

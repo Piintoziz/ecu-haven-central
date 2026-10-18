@@ -44,6 +44,8 @@ const T = {
     shipping: "Envio",
     total: "Total",
     vatIncluded: "IVA incluído",
+    subtotal: "Subtotal (s/ IVA)",
+    vat: "IVA (23%)",
     hello: (n: string) => `Olá ${n},`,
     contactSubject: "Recebemos o seu pedido",
     contactThanks: "Obrigado pelo contacto. A nossa equipa técnica responde normalmente em menos de 24 horas úteis.",
@@ -84,6 +86,8 @@ const T = {
     shipping: "Shipping",
     total: "Total",
     vatIncluded: "VAT included",
+    subtotal: "Subtotal (excl. VAT)",
+    vat: "VAT (23%)",
     hello: (n: string) => `Hello ${n},`,
     contactSubject: "We've received your request",
     contactThanks: "Thank you for getting in touch. Our technical team usually replies within 24 working hours.",
@@ -154,9 +158,10 @@ function linesTable(
     )
     .join("");
   const tot = totals
-    ? `<tr><td style="padding:8px 0 2px;font-size:13px;color:#71717a">${esc(t.shipping)}</td><td style="text-align:right;font-size:13px;color:#71717a">${esc(price(totals.shipping))}</td></tr>
-<tr><td style="padding:2px 0;font-size:15px;font-weight:700">${esc(t.total)}</td><td style="text-align:right;font-size:15px;font-weight:700">${esc(price(totals.total))}</td></tr>
-<tr><td style="font-size:11px;color:#a1a1aa">${esc(t.vatIncluded)}</td><td style="text-align:right;font-size:11px;color:#a1a1aa">${esc(price(totals.vat))}</td></tr>`
+    ? `<tr><td style="padding:8px 0 2px;font-size:13px;color:#71717a">${esc(t.subtotal)}</td><td style="text-align:right;font-size:13px;color:#71717a">${esc(price(totals.subtotal))}</td></tr>
+<tr><td style="padding:2px 0;font-size:13px;color:#71717a">${esc(t.vat)}</td><td style="text-align:right;font-size:13px;color:#71717a">${esc(price(totals.vat))}</td></tr>
+<tr><td style="padding:2px 0;font-size:13px;color:#71717a">${esc(t.shipping)}</td><td style="text-align:right;font-size:13px;color:#71717a">${esc(price(totals.shipping))}</td></tr>
+<tr><td style="padding:2px 0;font-size:15px;font-weight:700">${esc(t.total)}</td><td style="text-align:right;font-size:15px;font-weight:700">${esc(price(totals.total))}</td></tr>`
     : "";
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 16px">${rows}${tot}</table>`;
 }

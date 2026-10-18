@@ -206,103 +206,7 @@
 }
 
 
-/* ---------------------------------------------------------------------------
-   Loader centralina 3D (components/site/ecu-scan-loader.tsx)
-   Ciclo de 6 s: linha vermelha percorre o contorno (0–45%), pausa curta,
-   rotação 360° devagar–rápido–devagar a mostrar lados e costas (52–100%).
-   --------------------------------------------------------------------------- */
-:root {
-  --scan: oklch(0.63 0.25 27);
-}
-
-.ecu3d {
-  display: grid;
-  place-items: center;
-  perspective: 900px;
-}
-.ecu3d-box {
-  position: relative;
-  width: var(--w);
-  height: var(--h);
-  transform-style: preserve-3d;
-  transform: rotateX(-16deg) rotateY(-26deg);
-  animation: ecu3d-spin 6s linear infinite;
-}
-.ecu3d-layer {
-  position: absolute;
-  inset: 0;
-}
-/* Faces cheias (frente/costas/ficha): fundo escuro + contorno branco */
-.ecu3d-solid {
-  fill: oklch(0.19 0 0);
-  stroke: oklch(0.97 0 0 / 88%);
-  stroke-width: 1.1;
-  stroke-linejoin: round;
-}
-/* Fatias intermédias: dão a espessura quando roda */
-.ecu3d-slice {
-  fill: oklch(0.16 0 0);
-  stroke: oklch(0.97 0 0 / 30%);
-  stroke-width: 0.8;
-  stroke-linejoin: round;
-}
-.ecu3d-detail {
-  fill: none;
-  stroke: oklch(0.97 0 0 / 80%);
-  stroke-width: 0.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.ecu3d-text {
-  fill: oklch(0.97 0 0 / 85%);
-  stroke: none;
-  font-family: var(--font-mono);
-  font-size: 5px;
-  font-weight: 700;
-}
-.ecu3d-text-sm {
-  font-size: 3.6px;
-  font-weight: 400;
-  opacity: 0.7;
-}
-.ecu3d-trace {
-  fill: none;
-  stroke-width: 1.8;
-  stroke-linejoin: round;
-  stroke: var(--scan);
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
-  filter: drop-shadow(0 0 2px var(--scan)) drop-shadow(0 0 6px oklch(0.63 0.25 27 / 70%));
-  animation: ecu3d-trace 6s linear infinite;
-}
-
-@keyframes ecu3d-trace {
-  0% {
-    stroke-dashoffset: 100;
-    opacity: 1;
-  }
-  45%,
-  52% {
-    stroke-dashoffset: 0;
-    opacity: 1;
-  }
-  62%,
-  100% {
-    stroke-dashoffset: 0;
-    opacity: 0;
-  }
-}
-@keyframes ecu3d-spin {
-  0%,
-  52% {
-    transform: rotateX(-16deg) rotateY(-26deg);
-    /* 360°: arranca devagar, acelera a meio e trava devagar (ease-in-out forte) */
-    animation-timing-function: cubic-bezier(0.83, 0, 0.17, 1);
-  }
-  100% {
-    transform: rotateX(-16deg) rotateY(334deg);
-  }
-}
+/* Reticências animadas da legenda do loader (components/site/ecu-scan-loader.tsx) */
 @keyframes ecu-scan-dots {
   0%,
   20% {
@@ -327,7 +231,7 @@
     transform: scale(1);
   }
   40% {
-    transform: scale(1.18);
+    transform: scale(1.06);
   }
 }
 .cart-bump {
@@ -335,12 +239,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ecu3d-box {
-    animation: none;
-  }
-  .ecu3d-trace {
-    animation-duration: 8s;
-  }
   .ecu-scan-dots,
   .cart-bump {
     animation: none;

@@ -98,11 +98,14 @@ async function rpcAll<T>(fn: string): Promise<T[]> {
   return out;
 }
 
-export type LegacyReference = { ref: string; slug: string | null };
-
-/** Índice de referências do site antigo (/centralinas): ~13 mil, com slug quando há peça ativa. */
-export function getLegacyReferenceIndex(): Promise<LegacyReference[]> {
-  return rpcAll<LegacyReference>("legacy_reference_index");
+/**
+ * Índice de referências (/centralinas): ~15 mil, com slug quando há peça ativa.
+ * Um só pedido, já compacto: [[ref, slug], ...] (antes eram 16 blocos de 1000 linhas).
+ */
+export async function getLegacyReferenceIndex(): Promise<[string, string | null][]> {
+  const { data, error } = await getPublicClient().rpc("legacy_reference_index_compact");
+  if (error) fail("legacy_reference_index", error.message);
+  return (data ?? []) as [string, string | null][];
 }
 
 export function getSitemapProducts(): Promise<{ slug: string; updated_at: string }[]> {

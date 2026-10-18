@@ -35,11 +35,11 @@ const GROUPS_PT: { title: string; items: Faq[] }[] = [
     items: [
       {
         q: "Que métodos de pagamento aceitam?",
-        a: "De momento, transferência bancária: os dados seguem no email de confirmação, com o código da encomenda como descritivo. Cartão, MB WAY, Multibanco e PayPal serão adicionados em breve.",
+        a: "Pagamento online seguro por cartão (Visa, Mastercard), Apple Pay, Google Pay, MB WAY, Multibanco e outros métodos apresentados no pagamento. Também aceitamos transferência bancária, com o código da encomenda como descritivo.",
       },
       {
-        q: "Os preços incluem IVA? Emitem fatura com NIF?",
-        a: "Sim. Todos os preços incluem IVA à taxa legal em vigor e a fatura é emitida com o NIF ou número de IVA indicado no checkout. Para empresas da UE com IVA intracomunitário válido e envios para fora da UE, confirmamos o regime de IVA antes do pagamento.",
+        q: "Os preços têm IVA? Emitem fatura com NIF?",
+        a: "Os preços das peças são apresentados sem IVA; o IVA (23%) é somado no carrinho e no checkout, e os portes são apresentados já com IVA. A fatura é emitida com o NIF ou número de IVA indicado no checkout. Para empresas da UE com IVA intracomunitário válido e envios para fora da UE, confirmamos o regime de IVA antes do pagamento.",
       },
       {
         q: "Preciso de criar conta para comprar?",
@@ -106,11 +106,11 @@ const GROUPS_EN: { title: string; items: Faq[] }[] = [
     items: [
       {
         q: "Which payment methods do you accept?",
-        a: "For now, bank transfer: the details are in the confirmation email, with the order code as the payment reference. Card, MB WAY, Multibanco and PayPal will be added soon.",
+        a: "Secure online payment by card (Visa, Mastercard), Apple Pay, Google Pay, MB WAY, Multibanco and the other methods shown at payment. We also accept bank transfer, with the order code as the payment reference.",
       },
       {
         q: "Do prices include VAT? Do you issue invoices with a VAT number?",
-        a: "Yes. All prices include VAT at the applicable rate and the invoice is issued with the tax or VAT number entered at checkout. For EU businesses with a valid intra-community VAT number and for shipments outside the EU, we confirm the VAT treatment before payment.",
+        a: "Part prices are shown excluding VAT; VAT (23%) is added in the cart and at checkout, and shipping is shown with VAT included. The invoice is issued with the tax or VAT number entered at checkout. For EU businesses with a valid intra-community VAT number and for shipments outside the EU, we confirm the VAT treatment before payment.",
       },
       {
         q: "Do I need an account to buy?",

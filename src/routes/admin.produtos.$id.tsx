@@ -195,7 +195,7 @@ function ProductEditor({
                 invalid={!!errors.quantity}
               />
             </FieldWrap>
-            <FieldWrap id="price" label="Preço com IVA" optional error={errors.price} hint="Vazio = “Sob consulta” na loja">
+            <FieldWrap id="price" label="Preço sem IVA" optional error={errors.price} hint="Vazio = “Sob consulta” na loja">
               <div className="relative">
                 <TextInput
                   id="price"

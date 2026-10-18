@@ -103,7 +103,7 @@ const sectionsPt: LegalSection[] = [
     body: (
       <>
         <p>
-          Os preços estão em euros e <strong>incluem IVA à taxa legal em vigor</strong>. Os portes
+          Os preços das peças estão em euros e <strong>não incluem IVA</strong>, que é acrescido à taxa legal em vigor (23%) e apresentado no carrinho e no checkout. Os portes
           são calculados no checkout em função do destino, do peso e do tipo de envio, e
           apresentados antes da confirmação. Para empresas com número de IVA intracomunitário válido
           ou envios para fora da União Europeia, o regime de IVA aplicável é confirmado antes do
@@ -386,7 +386,7 @@ const sectionsEn: LegalSection[] = [
     body: (
       <>
         <p>
-          Prices are in euros and <strong>include VAT at the applicable rate</strong>. Shipping is
+          Part prices are in euros and <strong>exclude VAT</strong>, which is added at the applicable rate (23%) and shown in the cart and at checkout. Shipping is
           calculated at checkout according to destination, weight and service, and shown before you
           confirm. For businesses with a valid intra-community VAT number or shipments outside the
           European Union, the applicable VAT treatment is confirmed before payment.

@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-router";
 import { MotionConfig } from "framer-motion";
 import { useEffect, useMemo, type ReactNode } from "react";
+import { usePreloadEcuModel } from "@/components/site/ecu-scan-loader";
 
 import appCss from "../styles.css?url";
 import { SiteHeader } from "@/components/site/site-header";
@@ -107,9 +108,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
       // Mini centralina laranja (cor da marca): ICO (16/32/48, desenhado ao pixel para ficar nítido no separador)
-      { rel: "icon", href: "/favicon.ico", sizes: "48x48" },
-      { rel: "icon", href: "/favicon-32.png", type: "image/png", sizes: "32x32" },
-      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
+      { rel: "icon", href: "/favicon.ico?v=3", sizes: "48x48" },
+      { rel: "icon", href: "/favicon-32.png?v=3", type: "image/png", sizes: "32x32" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png?v=3", sizes: "180x180" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       {
         rel: "preconnect",
@@ -177,6 +178,7 @@ function RootComponent() {
   const isAdmin = useRouterState({
     select: (s) => s.matches.some((m) => m.routeId === "/admin"),
   });
+  usePreloadEcuModel();
 
   return (
     <QueryClientProvider client={queryClient}>

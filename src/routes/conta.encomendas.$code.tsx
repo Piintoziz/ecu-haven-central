@@ -58,16 +58,16 @@ function MinhaEncomenda() {
               </div>
             ))}
             <div className="flex justify-between gap-4 text-muted-foreground">
+              <dt>{a.vatIncluded}</dt>
+              <dd className="tabular-nums">{formatPrice(order.data.vat_cents)}</dd>
+            </div>
+            <div className="flex justify-between gap-4 text-muted-foreground">
               <dt>{a.shipping}</dt>
               <dd className="tabular-nums">{formatPrice(order.data.shipping_cents)}</dd>
             </div>
             <div className="flex justify-between gap-4 border-t border-border pt-2 font-bold">
               <dt>{a.total}</dt>
               <dd className="font-mono tabular-nums">{formatPrice(order.data.total_cents)}</dd>
-            </div>
-            <div className="flex justify-between gap-4 text-xs text-muted-foreground">
-              <dt>{a.vatIncluded}</dt>
-              <dd className="tabular-nums">{formatPrice(order.data.vat_cents)}</dd>
             </div>
           </dl>
         </OrderView>

@@ -3,7 +3,7 @@ import { ns } from "../ns";
 export const layout = ns({
   pt: {
     skip: "Saltar para o conteúdo",
-    topbar: "Preços com IVA incluído · Envio para Portugal, Europa e resto do mundo",
+    topbar: "Preços sem IVA (+ 23% IVA) · Envio para Portugal, Europa e resto do mundo",
     support: "Apoio técnico",
     homeAria: "Centralinas.com — início",
     nav: {
@@ -61,7 +61,7 @@ export const layout = ns({
       ral: "Em caso de litígio, o consumidor pode recorrer a uma entidade de Resolução Alternativa de Litígios:",
       or: " ou ",
       moreInfo: ". Mais informações em",
-      copyright: (y: number) => `© ${y} Centralinas. Preços com IVA incluído à taxa legal em vigor.`,
+      copyright: (y: number) => `© ${y} Centralinas. Aos preços acresce IVA à taxa legal em vigor.`,
       secure: "Pagamentos e dados protegidos com ligação cifrada (HTTPS).",
     },
     cookies: {
@@ -118,7 +118,7 @@ export const layout = ns({
   },
   en: {
     skip: "Skip to content",
-    topbar: "Prices include VAT · Shipping to Portugal, Europe and worldwide",
+    topbar: "Prices exclude VAT (+ 23% VAT) · Shipping to Portugal, Europe and worldwide",
     support: "Technical support",
     homeAria: "Centralinas.com — home",
     nav: {
@@ -175,7 +175,7 @@ export const layout = ns({
       ral: "In case of dispute, consumers may refer to an Alternative Dispute Resolution entity:",
       or: " or ",
       moreInfo: ". More information at",
-      copyright: (y: number) => `© ${y} Centralinas. Prices include VAT at the applicable rate.`,
+      copyright: (y: number) => `© ${y} Centralinas. VAT is added to prices at the applicable rate.`,
       secure: "Payments and data protected by an encrypted connection (HTTPS).",
     },
     cookies: {

@@ -84,7 +84,7 @@ export async function createCheckoutSession(input: {
             unit_amount: input.amountCents,
             product_data: {
               name: input.locale === "en" ? `Order ${input.orderCode}` : `Encomenda ${input.orderCode}`,
-              description: input.locale === "en" ? "Centralinas.com — VAT and shipping included" : "Centralinas.com — IVA e portes incluídos",
+              description: input.locale === "en" ? "Centralinas.com — VAT and shipping included in the total" : "Centralinas.com — total com IVA e portes",
             },
           },
         },

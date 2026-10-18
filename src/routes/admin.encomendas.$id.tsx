@@ -275,17 +275,13 @@ function ItemsPanel({ order }: { order: AdminOrder }) {
         ))}
       </ul>
       <dl className="space-y-1.5 border-t border-border px-5 py-4 text-sm">
-        <Row label="Subtotal" value={formatPrice(order.subtotal_cents)} />
+        <Row label="Subtotal (s/ IVA)" value={formatPrice(order.subtotal_cents)} />
+        <Row label={`IVA (${Number(order.vat_rate)}%)`} value={formatPrice(order.vat_cents)} />
         <Row
           label={`Envio${order.shipping_rate ? ` · ${order.shipping_rate.carrier}` : ""}${order.service_level ? ` ${serviceLevelLabel[order.service_level]}` : ""}`}
           value={formatPrice(order.shipping_cents)}
         />
         <Row label="Total" value={formatPrice(order.total_cents)} strong />
-        <Row
-          label={`IVA incluído (${Number(order.vat_rate)}%)`}
-          value={formatPrice(order.vat_cents)}
-          muted
-        />
       </dl>
     </Panel>
   );

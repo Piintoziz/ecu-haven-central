@@ -25,7 +25,7 @@ export const Route = createFileRoute("/carrinho")({
 });
 
 function CarrinhoPage() {
-  const { lines, ready, subtotalCents, setQuantity, remove, sync } = useCart();
+  const { lines, ready, subtotalCents, vatCents, setQuantity, remove, sync } = useCart();
   const navigate = useNavigate();
   const [notice, setNotice] = useState(false);
   const { t, locale } = useI18n();
@@ -157,13 +157,17 @@ function CarrinhoPage() {
               <dd className="tabular-nums">{formatPrice(subtotalCents)}</dd>
             </div>
             <div className="flex justify-between">
+              <dt className="text-muted-foreground">{c.vat}</dt>
+              <dd className="tabular-nums">{formatPrice(vatCents)}</dd>
+            </div>
+            <div className="flex justify-between">
               <dt className="text-muted-foreground">{c.shipping}</dt>
               <dd className="text-muted-foreground">{c.shippingNext}</dd>
             </div>
           </dl>
           <div className="mt-4 flex items-baseline justify-between border-t border-border pt-4">
             <span className="font-bold">{c.totalVat}</span>
-            <span className="text-2xl font-extrabold tabular-nums">{formatPrice(subtotalCents)}</span>
+            <span className="text-2xl font-extrabold tabular-nums">{formatPrice(subtotalCents + vatCents)}</span>
           </div>
           {hasStockIssue ? (
             <p className="mt-5 rounded-md bg-warning/10 p-3 text-xs text-warning">

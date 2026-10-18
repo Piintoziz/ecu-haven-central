@@ -1,3 +1,4 @@
+import { vatOf } from "@/lib/vat";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 // Carrinho guardado no browser (conveniência do visitante). Preços e stock são
@@ -16,6 +17,8 @@ type CartContextValue = {
   lines: CartLine[];
   count: number;
   subtotalCents: number;
+  /** IVA sobre o subtotal (os preços das peças são sem IVA) */
+  vatCents: number;
   ready: boolean;
   add: (line: Omit<CartLine, "quantity">, quantity?: number) => void;
   setQuantity: (productId: string, quantity: number) => void;
@@ -114,19 +117,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const subtotalCents = lines.reduce((n, l) => n + l.priceCents * l.quantity, 0);
   const value = useMemo<CartContextValue>(
     () => ({
       lines,
       ready,
       count: lines.reduce((n, l) => n + l.quantity, 0),
-      subtotalCents: lines.reduce((n, l) => n + l.priceCents * l.quantity, 0),
+      subtotalCents,
+      vatCents: vatOf(subtotalCents),
       add,
       setQuantity,
       remove,
       clear,
       sync,
     }),
-    [lines, ready, add, setQuantity, remove, clear, sync],
+    [lines, ready, subtotalCents, add, setQuantity, remove, clear, sync],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

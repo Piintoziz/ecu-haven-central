@@ -77,15 +77,24 @@ export function SiteHeader() {
             <span className="hidden sm:inline">{l.cart}</span>
             <AnimatePresence initial={false}>
               {ready && count > 0 && (
+                // chave fixa: com key={count}, cliques rápidos deixavam vários badges a sair
+                // ao mesmo tempo dentro do botão, que ficava cada vez mais largo
                 <motion.span
-                  key={count}
+                  key="badge"
                   initial={{ scale: 0.6, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.6, opacity: 0 }}
                   transition={{ type: "spring", stiffness: 500, damping: 28 }}
                   className="grid min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[11px] font-bold tabular-nums text-primary-foreground"
                 >
-                  {count}
+                  <motion.span
+                    key={count}
+                    initial={{ scale: 1.35 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 22 }}
+                  >
+                    {count}
+                  </motion.span>
                 </motion.span>
               )}
             </AnimatePresence>

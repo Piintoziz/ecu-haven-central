@@ -36,7 +36,7 @@ export const common = ns({
     price: money.pt,
     priceOnRequest: "Sob consulta",
     priceLabel: (c: number | null | undefined) => (c == null ? "Sob consulta" : money.pt(c)),
-    vatIncluded: "IVA incluído",
+    vatIncluded: "+ IVA",
     condition: {
       new: "Nova",
       used_tested: "Usada · testada",
@@ -93,7 +93,7 @@ export const common = ns({
     price: money.en,
     priceOnRequest: "Price on request",
     priceLabel: (c: number | null | undefined) => (c == null ? "Price on request" : money.en(c)),
-    vatIncluded: "VAT included",
+    vatIncluded: "+ VAT",
     condition: {
       new: "New",
       used_tested: "Used · tested",

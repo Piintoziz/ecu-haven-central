@@ -168,7 +168,7 @@ function CheckoutPage() {
   }, [shipping.data, rateId, setValue]);
 
   const selectedRate = hasDestination ? shipping.data?.find((o) => o.id === rateId) : undefined;
-  const totalCents = cart.subtotalCents + (selectedRate?.price_cents ?? 0);
+  const totalCents = cart.subtotalCents + cart.vatCents + (selectedRate?.price_cents ?? 0);
 
   async function onSubmit(values: FormValues) {
     setServerError(null);
@@ -434,6 +434,10 @@ function CheckoutPage() {
               <dd className="tabular-nums">{formatPrice(cart.subtotalCents)}</dd>
             </div>
             <div className="flex justify-between">
+              <dt className="text-muted-foreground">{t.shop.cart.vat}</dt>
+              <dd className="tabular-nums">{formatPrice(cart.vatCents)}</dd>
+            </div>
+            <div className="flex justify-between">
               <dt className="text-muted-foreground">{t.shop.cart.shipping}</dt>
               <dd className="tabular-nums">{selectedRate ? formatPrice(selectedRate.price_cents) : "—"}</dd>
             </div>
@@ -442,9 +446,6 @@ function CheckoutPage() {
             <span className="font-bold">Total</span>
             <span className="text-2xl font-extrabold tabular-nums">{formatPrice(totalCents)}</span>
           </div>
-          <p className="mt-1 text-right text-xs text-muted-foreground">
-            {c.vatIncl(formatPrice(Math.round((totalCents * 23) / 123)))}
-          </p>
 
           <label className="mt-5 flex items-start gap-2.5 text-xs text-muted-foreground">
             <input type="checkbox" className="mt-0.5 size-4 accent-[var(--color-primary)]" {...register("accept_terms")} />

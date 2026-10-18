@@ -152,7 +152,7 @@ function productLd(p: ProductDetail, path: string, image: string | null, t: Dict
               "@type": "PriceSpecification",
               price: (p.price_cents / 100).toFixed(2),
               priceCurrency: "EUR",
-              valueAddedTaxIncluded: true,
+              valueAddedTaxIncluded: false,
             },
             seller: { "@type": "Organization", name: SITE_NAME },
           },

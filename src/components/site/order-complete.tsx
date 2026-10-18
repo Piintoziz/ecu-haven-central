@@ -296,16 +296,16 @@ function Summary({ order }: { order: CompletedOrder }) {
           <dd className="tabular-nums">{formatPrice(order.subtotal_cents)}</dd>
         </div>
         <div className="flex justify-between">
+          <dt className="text-muted-foreground">{s.vat}</dt>
+          <dd className="tabular-nums">{formatPrice(order.vat_cents)}</dd>
+        </div>
+        <div className="flex justify-between">
           <dt className="text-muted-foreground">{s.shipping}</dt>
           <dd className="tabular-nums">{formatPrice(order.shipping_cents)}</dd>
         </div>
         <div className="flex justify-between border-t border-border pt-2 text-base font-extrabold">
           <dt>{s.total}</dt>
           <dd className="tabular-nums">{formatPrice(order.total_cents)}</dd>
-        </div>
-        <div className="flex justify-between text-xs text-muted-foreground">
-          <dt>{s.vat}</dt>
-          <dd className="tabular-nums">{formatPrice(order.vat_cents)}</dd>
         </div>
       </dl>
     </aside>
